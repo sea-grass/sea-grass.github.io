@@ -1,0 +1,10 @@
+{
+  "name": "Seagrass",
+  "description": "sea-grass.github.io",
+  "version": "1.0",
+  "launch_path": "/index.html",
+  "developer": {
+    "name": "Chris Grass",
+    "url": "sea-grass.github.io"
+  }
+}
