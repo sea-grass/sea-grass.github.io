@@ -1,7 +1,10 @@
 <html>
   <head>
     <title>Seagrass GitHub</title>
+<<<<<<< HEAD
     <link rel="stylesheet" type="text/css" href="seagrass_style.css"/>
+    <link href='http://fonts.googleapis.com/css?family=Josefin+Slab' rel='stylesheet' type='text/css' />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
   </head>
   <body>
     <div id="header"><h2>Seagrass</h2></div>
@@ -10,6 +13,15 @@
     </div>
     <div id="nav" class="beauty">FFOS -- Plivo -- Academia -- Chuck -- Misc</div>
     <div id="footer">Christopher Grass | <div id="uinfo"></div></div>
+    
+    <svg id="svg_dom" xmlns="http://www.w3.org/2000/svg" version="1.1" width:="500" height="500">
+      <path id="canvas" d="M 0 0 L 500 0 L 500 500 L 000 500  z" fill="red" stroke="blue" stroke-width="3" />
+    </svg>
+    <script src="can.js"></script>
+    <input type="button" value="Triangle" onclick="tri();" />
+    <input type="button" value="Rectangle" onclick="rect();" />
+    <input id="col_field" type="text" value="Change colour"  />
+    <input type="button" value="Colour it!" onclick="col();" />
     
     <script>
       var w = window.innerWidth, h = window.innerHeight;
