@@ -13,7 +13,7 @@ body {
 `-'   `-'   `----' `----'    `----'  `-'   `--'  `----'`----'`----' 
 */
 
-@media only screen and (max-width: 900px) {
+@media only screen and (max-width: 1200px) {
   #phone-container { display: block; }
   #phone-container {
     width: 300px; height: 400px;
@@ -43,7 +43,7 @@ body {
 `-'     `---'    `----'  `-'   `--'  `----'`----'`----' 
 */
 @media only screen
-and (min-width: 900px) {
+and (min-width: 1200px) {
   
   #pc-container { display: block; }
   
