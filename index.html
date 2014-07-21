@@ -1,34 +1,81 @@
 <html>
   <head>
-    <title>Seagrass GitHub</title>
-    <link rel="stylesheet" type="text/css" href="seagrass_style.css"/>
-    <link href='http://fonts.googleapis.com/css?family=Josefin+Slab' rel='stylesheet' type='text/css' />
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <title>sea-grass.github.io</title>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+	margin: 0 auto;
+      }
+      #banner {
+        background: url(banner.jpg);
+	background-size: 100% 100%;
+	background-repeat: no-repeat;
+	background-position: 50%;
+	height: 60px;
+        width: 100%;
+      }
+    </style>
   </head>
   <body>
-    <span id="pc-container" class="pc-behave">
-      <div id="header"><h2>Seagrass</h2></div>
-      <div id="showcase">
-        <div class="content"><a target="_blank" href="http://github.com/sea-grass">Text in here</a></div>
-      </div>
-      <div id="nav" class="beauty">FFOS -- Plivo -- Academia -- Chuck -- Misc</div>
-      <div id="footer">Christopher Grass | <div id="uinfo"></div></div>
-      <svg id="svg_dom" xmlns="http://www.w3.org/2000/svg" version="1.1" width:="500" height="500">
-        <path id="canvas" d="M 0 0 L 500 0 L 500 500 L 000 500  z" fill="red" stroke="blue" stroke-width="3" />
-      </svg>
-      <script src="can.js"></script>
-      <input type="button" value="Triangle" onclick="tri();" />
-      <input type="button" value="Rectangle" onclick="rect();" />
-      <input id="col_field" type="text" value="Change colour"  />
-      <input type="button" value="Colour it!" onclick="col();" />
-    </span>
-    <span id="phone-container" class="phone-behave">
-      <img class="phone-banner" src="banner.jpg"/>
-      <h4 class="phone-heading">Seagrass</h4>
-    </span>
-    <script>
-      var w = window.innerWidth, h = window.innerHeight;
-      document.getElementById("uinfo").innerHTML = w + "x" + h;
-    </script>
+	<div id="banner">Responsive Webpage without bootstrap</div>
+	<div id="content">
+Lorem ipsum dolor...
+Lorem ipsum dolor...
+Lorem ipsum dolor...
+Lorem ipsum dolor...
+Lorem ipsum dolor...
+Lorem ipsum dolor...
+Lorem ipsum dolor...
+Lorem ipsum dolor...
+Lorem ipsum dolor...
+</div>
+	<div id="windowSize"></div>
+	<script>
+		function getBackgroundImageDimensions(el) {
+			var regex = /(url\()(.*)(\))/g;
+			var styles = window.getComputedStyle(el);
+			var backgroundimagestring = styles.backgroundImage;
+			var imgUrl = regex.exec(backgroundimagestring)[2];
+			var img = new Image();
+			img.src = imgUrl;
+			return {w:img.width,h:img.height};
+		}
+		var imgFromUrl = function(imageurlstring) {
+
+			console.log(imageurlstring);
+			console.log(regex.exec(imageurlstring)[2]);
+			return regex.exec(imageurlstring)[2];
+		};
+		function resize(e) {
+			var w = window.innerWidth,
+			h = window.innerHeight;
+			var minW = 320,
+			maxW = 980;
+			w = w <= minW ? minW : w >= maxW ? maxW : w;
+
+			console.log("setting body size");
+			document.body.style.width=w+"px";
+			document.body.style.height=h+"px";
+
+			var banner = document.querySelector("#banner");
+			var bannerStyles = window.getComputedStyle(banner);
+			var bD = getBackgroundImageDimensions(banner);
+			banner.style.backgroundSize=Math.floor(w/bD.w*100)+"% 100px";
+
+			var wsLog = document.querySelector("#windowSize");
+			wsLog.innerHTML = w+"x"+h;
+
+			wsLog.innerHTML = Math.floor(w/bD.w*100) + ":"+ w + "x" + bD.h + ":" + h
+		}
+		document.body.onload = resize;
+		document.body.onresize = resize;
+	</script>
+	<div id="container">
+
+
+	</div>
   </body>
 </html>
