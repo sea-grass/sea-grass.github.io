@@ -96,7 +96,8 @@
 			var banner = document.querySelector("#banner");
 			var bannerStyles = window.getComputedStyle(banner);
 			var bD = getBackgroundImageDimensions(banner);
-			banner.style.backgroundSize=Math.floor(w/bD.w*100)+"% 100px";
+			//banner.style.backgroundSize=Math.floor(w/bD.w*100)+"% 100px";
+			banner.style.backgroundSize="100%";
 
 			var wsLog = document.querySelector("#windowSize");
 			wsLog.innerHTML = w+"x"+h;
