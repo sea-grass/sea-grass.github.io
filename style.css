@@ -1,8 +1,0 @@
-html > * { margin: 0;padding: 0; }
-#nav {
-  padding: 5px;
-  background-color: rgb(0,151,0);
-  font-family: 'Josefin Slab', serif;
-  font-size: 48px;
-  text-align: center;
-}
