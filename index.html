@@ -1,6 +1,7 @@
 <html>
   <head>
     <title>sea-grass.github.io</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
       html, body {
         margin: 0;
@@ -25,6 +26,7 @@
 	border: 1px solid #ccc;
       }
       #banner {
+	position: relative;
         background: url(lib/img/banner.jpg);
 	background-size: 100% 100%;
 	background-repeat: no-repeat;
@@ -32,6 +34,22 @@
 	height: 60px;
         width: 100%;
 	margin-bottom: 60px;
+      }
+      #banner::after {
+        content: "";
+        width: 100%;
+        height: 60px;
+        position: absolute;
+        bottom: -60px;
+	left: 0;
+	background-color: #aaa;
+
+
+	box-sizing: border-box;
+	border-left: Calc(2%) solid black;
+	border-right: Calc(2%) solid black;
+	border-bottom: 10px solid black;
+
       }
     </style>
   </head>
