@@ -2,114 +2,17 @@
   <head>
     <title>sea-grass.github.io</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-      html, body {
-        margin: 0;
-        padding: 0;
-      }
-      body {
-	margin: 0 auto;
-	background-color: #eee;
-      }
-      #wiki {
-	position: relative;
-        width: 100%;
-        height: 80%;
-	padding: 0 1%;
-	overflow: none;
-	box-sizing: border-box;
-      }
-	#wiki iframe {
-	position: relative;
-	margin: 0 auto;
-	width: 100%;
-	height: 100%;
-	border: 1px solid #ccc;
-      }
-	#wiki iframe {
-		border-left: 5px solid #999;
-		border-right: 5px solid #999;
-		border-bottom: 10px solid #bbb;
-		box-sizing: border-box;
-	}
-      #banner {
-	position: relative;
-        background: url(lib/img/banner.jpg);
-	background-size: 100% 100%;
-	background-repeat: no-repeat;
-	background-position: 50%;
-	height: 60px;
-        width: 100%;
-	margin-bottom: 10px;
-      }
-      #banner::after {
-        content: "";
-        width: 100%;
-        height: 10px;
-        position: absolute;
-        bottom: -10px;
-	left: 0;
-
-	background-color: #eee;
-
-	box-sizing: border-box;
-	border-left: Calc(0.005 * 100vw) solid rgba(0,0,0,0);
-	border-right: Calc(0.005 * 100vw) solid rgba(0,0,0,0);
-	border-top: 10px solid #999;
-
-      }
-    </style>
+    <link rel="stylesheet" type="text/css" href="style.css"/>
   </head>
   <body>
-	<div id="banner" data-height="60px">Responsive Webpage without bootstrap</div>
+	<div id="banner" data-height="60px"></div>
 	<div id="wiki">
 		<iframe src="mdwiki.html"></iframe>
 	</div>
 	<div id="windowSize"></div>
-	<script>
-		function getBackgroundImageDimensions(el) {
-			var regex = /(url\()(.*)(\))/g;
-			var styles = window.getComputedStyle(el);
-			var backgroundimagestring = styles.backgroundImage;
-			var imgUrl = regex.exec(backgroundimagestring)[2];
-			var img = new Image();
-			img.src = imgUrl;
-			return {w:img.width,h:img.height};
-		}
-		var imgFromUrl = function(imageurlstring) {
-
-			console.log(imageurlstring);
-			console.log(regex.exec(imageurlstring)[2]);
-			return regex.exec(imageurlstring)[2];
-		};
-		function resize(e) {
-			var w = window.innerWidth,
-			h = window.innerHeight;
-			var minW = 320,
-			maxW = 980;
-			w = w <= minW ? minW : w >= maxW ? maxW : w;
-
-			console.log("setting body size");
-			document.body.style.width=w+"px";
-			document.body.style.height=h+"px";
-
-			var banner = document.querySelector("#banner");
-			var bannerStyles = window.getComputedStyle(banner);
-			var bD = getBackgroundImageDimensions(banner);
-			//banner.style.backgroundSize=Math.floor(w/bD.w*100)+"% 100px";
-			banner.style.backgroundSize="100%";
-
-			var wsLog = document.querySelector("#windowSize");
-			wsLog.innerHTML = w+"x"+h;
-
-			wsLog.innerHTML = Math.floor(w/bD.w*100) + ":"+ w + "x" + bD.h + ":" + h
-		}
-		document.body.onload = resize;
-		document.body.onresize = resize;
+	<script src="script.js">
 	</script>
 	<div id="container">
-
-
 	</div>
   </body>
 </html>
