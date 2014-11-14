@@ -1,0 +1,14 @@
+{
+	"name": "Sea-Grass GitHub",
+	"description":	"A canadian student developer computer guy",
+	"launch_path":	"/index.html",
+	"icons": {
+		"512": "",
+		"128": ""
+	},
+	"developer": {
+		"name": "sea-grass",
+		"url":	"http://sea-grass.github.io"
+	},
+	"default_locale": "en"
+}
