@@ -161,13 +161,20 @@ vLabel.style.right = "60px";
 document.body.appendChild(vLabel);
 var cnv;
 btn.addEventListener("click", function(e) {
+  var promptMessage;
   var n = nInput.value;
   var colourVariator = vInput.value;
   if (cnv) {
     cnv.remove();
   }
-  
-  cnv = new Display.Canvas(n,n, 10, 10).populate(colourVariator).element;
+  //Make sure the user wants to continue if n is big
+  if (n > 100) {
+    promptMessage = "You entered n=" + n + ". This may take a long time. Proceed?";
+    if (!prompt(promptMessage)) {
+      return false;
+    }
+  }
+  cnv = new Display.Canvas(n,n, 1, 1).populate(colourVariator).element;
   //btn.remove();
   document.body.appendChild(cnv);
 });
