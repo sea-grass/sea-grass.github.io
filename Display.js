@@ -170,7 +170,7 @@ btn.addEventListener("click", function(e) {
   //Make sure the user wants to continue if n is big
   if (n > 100) {
     promptMessage = "You entered n=" + n + ". This may take a long time. Proceed?";
-    if (!prompt(promptMessage)) {
+    if (!confirm(promptMessage)) {
       return false;
     }
   }
