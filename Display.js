@@ -314,6 +314,7 @@ btn.addEventListener("click", function(e) {
               //Remove all of the canvases from the body
               cnvs.innerHTML = "";
               //Add actual canvas to body
+              canvas.classList.add("rendered");
               document.body.appendChild(canvas);
               //Remove loading message from body
               loadingMessage.remove();
