@@ -11,6 +11,10 @@ var Display = {};
     var key = "canvases";
     var get = function(id) {
       var storage = JSON.parse(window.localStorage.getItem(key));
+      if (storage === null) {
+        window.localStorage.setItem(key, "{}");
+        storage = JSON.parse(window.localStorage.getItem(key));
+      }
       return storage[id];
     };
     var set = function(id, value) {
