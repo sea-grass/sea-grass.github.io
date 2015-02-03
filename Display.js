@@ -2,6 +2,13 @@ var Display = {};
 (function (){
   "use strict";
   var Canvas, Pixel, ColourGenerator;
+  /* Catch window errors */
+  window.onerror = function(errorMsg, url, lineNum) {
+    var errorEl;
+    errorEl = document.createElement("div");
+    errorEl.innerText = errorMsg + " @ " + url + ":" + lineNum;
+    document.appendChild(errorEl);
+  };
   /* Utilities */
   Display.genRandomColour = function () {
     /*one liner from http://www.paulirish.com/2009/random-hex-color-code-snippets/ */
@@ -336,9 +343,5 @@ btn.addEventListener("click", function(e) {
     }
   }
   dim = 5;
-  try {
-    newCanvas(n, n, dim, dim, colourVariator);
-  } catch(e) {
-    document.body.innerHTML += "<p>Error!" + e + "...</p>";
-  }
+  newCanvas(n, n, dim, dim, colourVariator);
 });
