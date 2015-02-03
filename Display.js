@@ -257,6 +257,7 @@ btn.addEventListener("click", function(e) {
   //Hide ui elements
   ui.style.display = "none";
   //Show loading message
+//MARK: last known working thing here
   document.body.appendChild(loadingMessage);
   //Show all 1x1 -> nxn canvases
   var bigX = 0, bigY = 0, bigUW = 0, bigUH = 0;
@@ -335,5 +336,9 @@ btn.addEventListener("click", function(e) {
     }
   }
   dim = 5;
-  newCanvas(n, n, dim, dim, colourVariator);
+  try {
+    newCanvas(n, n, dim, dim, colourVariator);
+  } catch(e) {
+    document.body.innerHTML += "<p>Error!" + e + "...</p>";
+  }
 });
