@@ -1,0 +1,28 @@
+* {
+  box-sizing: border-box;
+}
+html, body {
+  width: Calc(30px * 5);
+  height: Calc(30px * 5);
+  padding: 0;
+  margin: 0;
+}
+iframe {
+  border: 0.5px solid black;
+  overflow: hidden;
+}
+iframe {
+  opacity: 0.5;
+}
+iframe.pixel {
+  width: 30px;
+  height: 30px;
+  
+  -ms-zoom: 0.75;
+  -moz-transform: scale(0.75);
+  -moz-transform-origin: 0 0;
+  -o-transform: scale(0.75);
+  -o-transform-origin: 0 0;
+  -webkit-transform: scale(1);
+  -webkit-transform-origin: 0 0;
+}
