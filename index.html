@@ -10,7 +10,10 @@
   <link rel="stylesheet" type="text/css" href="./app.css"/>
   </head>
   <body>
-    <banner-image src="./lib/img/banner.jpg"></banner-image>
+    <banner-image src="./lib/img/banner.jpg">
+      <!-- Fallback for browsers with JS disabled -->
+      <img src="./lib/img/banner.jpg"/>
+    </banner-image>
     <div class="content">
       <div class="header">
         
