@@ -1,6 +1,12 @@
 body {
   background-color: #eee;
   margin: 0 auto; /* center vertically */
+  width: 50%;
+}
+
+banner-image img {
+  width: 100%;
+  padding: 0 10px;
 }
 
 .content {
