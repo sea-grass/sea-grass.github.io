@@ -130,8 +130,8 @@ var BannerImage;
   })();
   
   BannerImagePrototype.appendChild = function() {
-    if (!this.initialized) this.initialize();
     if (arguments.length != 1) throw "Invalid use of appendChild";
+    if (!this.initialized) this.initialize();
     
     return this.shadowRoot.appendChild(arguments[0]);
   };
@@ -177,6 +177,7 @@ var BannerImage;
         if (self.image.style.opacity < 1) {
           opacity += 0.1;
           self.image.style.opacity = opacity;
+          /* TODO: Is it really necessary to wrap the raf call with st? maybe just to maintain the framerate */
           window.setTimeout(function() {
             requestAnimationFrame(loadImage);
           }, 1000/30);
