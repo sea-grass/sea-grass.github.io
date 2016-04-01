@@ -124,8 +124,8 @@
       type:"img",
       
         attrs: {
-          width:n*10, 
-          height:n*10, 
+          width:n*2, 
+          height:n*2, 
           src:canvas.toDataURL()
         }
     });
