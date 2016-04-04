@@ -1,6 +1,6 @@
 (function() {
   'use strict';
-  var container, n_input, v_input, start_button;
+  var container, n_input, v_input, overlay_checkbox, start_button;
 
   n_input = new Cel({
     type: "input",
@@ -18,6 +18,14 @@
       name: "v",
       type: "text",
       value: 11
+    }
+  });
+  overlay_checkbox = new Cel({
+    type: "input",
+    id: "overlay",
+    attrs: {
+      name: "overlay",
+      type: "checkbox"
     }
   });
   start_button = new Cel({
@@ -41,6 +49,12 @@
         attrs: { for: "v" }
       },
       v_input,
+      {
+        type: "label",
+        innerHTML: "Enable overlay:",
+        attrs: { for: "overlay" }
+      },
+      overlay_checkbox,
       start_button
     ]
   });
@@ -48,14 +62,15 @@
   document.body.appendChild(container);
 
   function startRender() {
-    var n,v;
+    var n,v,overlay;
 
     n = Number.parseInt(n_input.value);
     v = Number.parseInt(v_input.value);
     assert("N and V are integers", Number.isInteger(n), Number.isInteger(v));
+    overlay = overlay_checkbox.checked;
 
     if (n > 300) {
-      var doContinue = prompt("You entered an n greater than 300 (n="+n+"). This may take a long time. Proceed?");
+      var doContinue = confirm("You entered an n greater than 300 (n="+n+"). This may take a long time. Proceed?");
       if (!doContinue) return;
     }
 
@@ -84,39 +99,10 @@
     var id = ctx.createImageData(1, 1);
     document.body.appendChild(canvas_container);
 
-    id.data[0] = 0; //r
-    id.data[1] = 0; //g
-    id.data[2] = 0; //b
-    id.data[3] = 255; //a
 
-    for (var x = 0; x < n; x++) {
-      for (var y = 0; y < n; y++) {
-        var r,g,b;
 
-        r = id.data[0];
-        g = id.data[1];
-        b = id.data[2];
+    draw(n, v, ctx, id, overlay);
 
-        b += v;
-        if (b > 255) {
-          b = b - 255;
-          g += v;
-          if (g > 255) {
-            g = g - 255;
-            r += v;
-            if (r > 255) {
-              r = r - 255;
-            }
-          }
-        }
-
-        id.data[0] = r;
-        id.data[1] = g;
-        id.data[2] = b;
-
-        ctx.putImageData(id, x, y);
-      }
-    }
 
     console.log("TODO, do like, stuff");
 
@@ -152,4 +138,43 @@
       throw "Assert failed: " + message;
     }
   }
+    function draw(n, v, ctx, id, recursive) {
+      id.data[0] = 0; //r
+      id.data[1] = 0; //g
+      id.data[2] = 0; //b
+      id.data[3] = 255; //a
+      for (var x = 0; x < n; x++) {
+        for (var y = 0; y < n; y++) {
+          var r,g,b;
+
+          r = id.data[0];
+          g = id.data[1];
+          b = id.data[2];
+
+          b += v;
+          if (b > 255) {
+            b = b - 255;
+            g += v;
+            if (g > 255) {
+              g = g - 255;
+              r += v;
+              if (r > 255) {
+                r = r - 255;
+              }
+            }
+          }
+
+          id.data[0] = r;
+          id.data[1] = g;
+          id.data[2] = b;
+
+          ctx.putImageData(id, x, y);
+        }
+      }
+      if (recursive) {
+        if (n < 1) return;
+
+        draw(n-1, v, ctx, id, recursive);
+      }
+    }
 }())
