@@ -1,6 +1,6 @@
 (function() {
   'use strict';
-  var container, n_input, v_input, start_button;
+  var container, n_input, v_input, image_input, start_button, start_image_button;
 
   n_input = new Cel({
     type: "input",
@@ -20,11 +20,27 @@
       value: 11
     }
   });
+  image_input = new Cel({
+    type: "input",
+    id: "image",
+    attrs: {
+      name: "image",
+      type: "file",
+      value: null
+    }
+  });
   start_button = new Cel({
     type: "button",
     innerHTML: "Start",
     on: {
       click: startRender
+    }
+  });
+  start_image_button = new Cel({
+    type: "button",
+    innerHTML: "Start image render",
+    on: {
+      click: startImageRender
     }
   });
   var container = new Cel({
@@ -41,7 +57,14 @@
         attrs: { for: "v" }
       },
       v_input,
-      start_button
+      {
+        type: "label",
+        innerHTML: "image",
+        attrs: { for: "image" }
+      },
+      image_input,
+      start_button,
+      start_image_button
     ]
   });
 
@@ -135,6 +158,71 @@
 
     //Show the container again
     container.style.display = "";
+  }
+
+  function startImageRender() {
+    var n,v,image_url,image;
+    var image_canvas, image_ctx, image_id,data;
+
+    n = Number.parseInt(n_input.value);
+    v = Number.parseInt(v_input.value);
+
+    assert("N and V are integers", Number.isInteger(n), Number.isInteger(v));
+    assert("A file is selected", image_input.files.length > 0);
+    image_url = URL.createObjectURL(image_input.files[0]);
+    console.log(image_url);
+    assert("Image url is not empty", image_url.length > 0);
+
+    image = new Image;
+
+
+
+   image.onload = drawImageToCanvas;
+   image.src = image_url;
+
+   function drawImageToCanvas(e) {
+     image_canvas = new Cel({
+      type: "canvas",
+      attrs: {
+        width: image.width,
+        height: image.height
+      }
+     });
+     image_ctx = image_canvas.getContext("2d");
+     document.body.appendChild(image_canvas);
+
+     image_ctx.drawImage(image, 0, 0);
+
+     image_id = image_ctx.getImageData(0, 0, image.width,image.height);
+     data = image_id.data;
+     for (var i = 0; i < data.length; i++) {
+      var _r = i + 0,
+          _g = i + 1,
+          _b = i + 2,
+          _a = i + 3;
+      var r = data[_r],
+          g = data[_g],
+          b = data[b];
+      r++;
+      g++;
+      b++;
+      data[_r] = r;
+      data[_g] = g;
+      data[_b] = b;
+     }
+     /*
+     for (var x = 0; x < image.width; x++) {
+        for (var y = 0; y < image.height; y++) {
+          data[y*image_canvas.width + x + 0] = 0;
+          data[y*image_canvas.width + x + 1] = 0;
+          data[y*image_canvas.width + x + 2] = 0;
+          data[y*image_canvas.width + x + 3] = 0;
+        }
+     }
+     */
+     image_ctx.putImageData(image_id, 0, 0);
+   }
+
   }
 
   function assert() {
