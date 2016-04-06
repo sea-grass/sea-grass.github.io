@@ -112,11 +112,11 @@
       style_select,
       start_button,
 //      start_image_button,
-      {
-        type: "label",
-        innerHTML: "Enable overlay:",
-        attrs: { for: "overlay" }
-      },
+//      {
+//        type: "label",
+//        innerHTML: "Enable overlay:",
+//        attrs: { for: "overlay" }
+//      },
       start_button,
       clear_button
     ]
