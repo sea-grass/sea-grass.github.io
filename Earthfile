@@ -59,6 +59,7 @@ lint:
 build:
   FROM +source
   COPY +env/.env .
+  COPY CNAME .
 
   ARG BASE_URL
 
@@ -68,6 +69,7 @@ build:
   # it as a Jekyll site, otherwise the generated `_app` directory will be considered private.
   # We want `_app` to be public because that's where SvelteKit drops the generated assets.
   RUN touch build/.nojekyll
+  RUN cp CNAME build/
 
   SAVE ARTIFACT build AS LOCAL ./build
 
