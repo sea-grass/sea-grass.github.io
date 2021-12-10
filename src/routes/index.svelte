@@ -1,8 +1,8 @@
 <script>
-	import banner from '../assets/banner.jpg';
+	import bannerWebp from '../assets/banner.webp';
 </script>
 
-<img src={banner} alt="Toronto skyline" />
+<img type="image/webp" src={bannerWebp} alt="Toronto skyline" />
 
 <div class="mx-2">
 	<h1 class="text-xl">sea-grass</h1>
