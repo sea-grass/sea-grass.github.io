@@ -27,7 +27,7 @@ jobs:
       - name: Pre-build check
         run: earthly --version
       - name: Build the site
-        run: earthly --build-arg BASE_URL='/bookmarklet-repository' +build
+        run: earthly +build
       - name: Publish site to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
