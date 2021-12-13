@@ -8,6 +8,7 @@ async function minify(html: string) {
 			// Effectively strip script tags from the output
 			// This method has the downside that an element that I use in the future will need to be added to `tagNames` to be preserved.
 			.use(rehypeSanitize, {
+				clobberPrefix: '',
 				allowDoctypes: true,
 				tagNames: [
 					'html',
@@ -22,7 +23,11 @@ async function minify(html: string) {
 					'a',
 					'img',
 					'div',
-					'span'
+					'span',
+					'div',
+					'section',
+					'h1',
+					'h2'
 				],
 				strip: ['script'],
 				attributes: {
