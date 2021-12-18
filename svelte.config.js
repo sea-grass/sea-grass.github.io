@@ -20,6 +20,7 @@ const config = {
 			base: process.env.BASE_URL || ''
 		},
 		router: false,
+		hydrate: false,
 		adapter: adapter({
 			pages: 'build',
 			assets: 'build',
