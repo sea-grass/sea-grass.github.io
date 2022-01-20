@@ -1,7 +1,7 @@
 FROM node:14-alpine
 WORKDIR /app
 
-npm i -g pnpm
+RUN npm i -g pnpm
 
 deps:
   COPY package.json ./
