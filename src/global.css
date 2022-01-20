@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+a {
+	@apply hover:underline;
+}
+
+body {
+	@apply text-slate-800 bg-slate-200;
+	font-family: Arial, sans-serif;
+}

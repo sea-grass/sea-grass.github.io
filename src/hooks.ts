@@ -1,20 +1,21 @@
-import { rehype } from 'rehype';
-import rehypePresetMinify from 'rehype-preset-minify';
+import type { Response } from '@sveltejs/kit';
+import { MINIFY_HTML } from '$lib/variables';
+import { minify } from '$lib/rehype';
 
-async function minify(html: string) {
-	return rehype().use(rehypePresetMinify).process(html).then(String);
+const html = (response: Response) => response.headers['content-type'] === 'text/html';
+
+async function postprocess(response: Response) {
+	if (MINIFY_HTML && html(response))
+		return {
+			...response,
+			body: await minify(String(response.body))
+		};
+
+	return response;
 }
 
 export async function handle({ request, resolve }) {
 	const response = await resolve(request);
-
-	if (response.headers['content-type'] === 'text/html') {
-		const body = await minify(response.body);
-		return {
-			...response,
-			body
-		};
-	}
-
-	return response;
+	const rendered = await postprocess(response);
+	return rendered;
 }
