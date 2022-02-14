@@ -10,8 +10,6 @@ const config = {
 	}),
 
 	kit: {
-		// hydrate the <div id="svelte"> element in src/app.html
-		target: '#svelte',
 		prerender: {
 			crawl: false,
 			entries: ['/']
@@ -19,8 +17,10 @@ const config = {
 		paths: {
 			base: process.env.BASE_URL || ''
 		},
-		router: false,
-		hydrate: false,
+		browser: {
+			router: false,
+			hydrate: false
+		},
 		adapter: adapter({
 			pages: 'build',
 			assets: 'build',
