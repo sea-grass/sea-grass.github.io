@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Icon from 'fa-svelte';
-	import { faGithub } from '@fortawesome/free-brands-svg-icons';
+	import { faGithub } from '@fortawesome/free-brands-svg-icons/faGithub';
 	const projects = [
 		{
 			rel: 'external',
