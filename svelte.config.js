@@ -11,6 +11,7 @@ const config = {
 
 	kit: {
 		prerender: {
+			default: true,
 			crawl: false,
 			entries: ['/']
 		},
