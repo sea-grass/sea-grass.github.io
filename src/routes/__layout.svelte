@@ -1,10 +1,11 @@
 <script lang="ts">
 	import '../global.css';
 	import bannerWebp from '../assets/banner.webp';
+	import resolve from '$lib/resolve';
 	const nav = [
 		{ href: 'https://github.com/sea-grass', text: 'github' },
-		{ href: '/#projects', text: 'projects' },
-		{ href: 'wiki', text: 'wiki' }
+		{ href: resolve('/#projects'), text: 'projects' },
+		{ href: '/wiki', text: 'wiki' }
 	];
 </script>
 
