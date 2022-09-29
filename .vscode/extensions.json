@@ -1,7 +1,0 @@
-{
-	"recommendations": [
-		"earthly.earthfile-syntax-highlighting",
-		"svelte.svelte-vscode",
-		"bradlc.vscode-tailwindcss"
-	]
-}

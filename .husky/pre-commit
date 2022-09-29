@@ -1,4 +1,8 @@
-#!/bin/sh
+#!/bin/bash
+
 . "$(dirname "$0")/_/husky.sh"
 
+cd scripts/builder
 npm run lint
+returnCode=$?
+exit $returnCode

@@ -2,11 +2,11 @@ import { MINIFY_HTML } from '$lib/variables';
 import type { Handle } from '@sveltejs/kit';
 import { minify } from '$lib/rehype';
 
-const html = (response: Response) => response.headers['content-type'] === 'text/html';
+const html = (response: Response) => response.headers.get('content-type') === 'text/html';
 
 async function postprocess(response: Response): Promise<Response> {
 	if (MINIFY_HTML && html(response)) {
-		const body = await minify(response.body);
+		const body = await minify(await response.text());
 		return new Response(body, response);
 	}
 

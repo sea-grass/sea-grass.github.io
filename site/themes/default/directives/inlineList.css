@@ -1,0 +1,25 @@
+.inline-list {
+    display: inline-block;
+}
+
+.inline-list p:first-of-type {
+    display: inline-block;
+}
+
+.inline-list p:first-of-type::after {
+    display: inline-block;
+    content: '';
+    width: 1ch;
+}
+
+.inline-list :is(ul, ol) {
+    display: inline-flex;
+}
+
+.inline-list :is(ul, ol) > li:not(:last-of-type) {
+    margin-right: 1ch;
+}
+
+.inline-list :is(ul, ol) > li:not(:last-of-type)::after {
+    content: ', ';
+}

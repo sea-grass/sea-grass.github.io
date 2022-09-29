@@ -10,23 +10,22 @@ const config = {
 	}),
 
 	kit: {
+		inlineStyleThreshold: 1024,
 		prerender: {
-			default: true,
-			crawl: false,
+			crawl: true,
 			entries: ['/']
 		},
 		paths: {
 			base: process.env.BASE_URL || ''
 		},
-		browser: {
-			router: false,
-			hydrate: false
-		},
 		adapter: adapter({
-			pages: 'build',
-			assets: 'build',
+			pages: '../../build',
+			assets: '../../build',
 			fallback: null
-		})
+		}),
+		files: {
+			assets: '../../site/assets'
+		}
 	}
 };
 
