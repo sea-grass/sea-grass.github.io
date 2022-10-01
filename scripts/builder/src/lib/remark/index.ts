@@ -29,9 +29,10 @@ const { compose, deepProps } = stampit;
  */
 const UNSAFE_EMPTY_CLOBBER_PREFIX = '';
 
-const schema = compose(
+type Schema = Exclude<Parameters<typeof rehypeSanitize>[0], void>;
+const schema = compose<Schema>(
 	deepProps(defaultSchema),
-	deepProps({
+	deepProps<Schema>({
 		clobberPrefix: UNSAFE_EMPTY_CLOBBER_PREFIX,
 		attributes: {
 			div: ['class']
@@ -60,12 +61,20 @@ const directives: Directives = {
 			const { class: classes } = node.attributes;
 			const data = node.data || (node.data = {});
 			data.hProperties = { class: classes };
+		},
+		async details(node) {
+			const data = node.data || (node.data = {});
+			data.hName = 'details';
 		}
 	},
 	leafDirective: {
 		async pagelatest(node) {
 			const data = node.data || (node.data = {});
 			data.hName = 'b';
+		},
+		async summary(node) {
+			const data = node.data || (node.data = {});
+			data.hName = 'summary';
 		}
 	}
 };
@@ -88,6 +97,7 @@ export interface DocumentResult {
 	title: string;
 	description: string;
 	frontmatter: object;
+	raw: string;
 }
 
 interface Heading {
@@ -114,6 +124,7 @@ export async function process(markdown: string): Promise<DocumentResult> {
 	if (result.data.description) description = result.data.description as string;
 	return {
 		html: String(result.value),
+		raw: markdown,
 		title,
 		description,
 		frontmatter: result.data

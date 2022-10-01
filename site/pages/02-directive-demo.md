@@ -18,15 +18,21 @@ Text directives start with a single colon (`:`).
 
 ### Bold
 
+:::details
+::summary[`:bold[bolded]`]
+:bold[bolded]
+:::
+
 In markdown, you can wrap content with two asterisks to **bold** it. This directive reproduces this behaviour. This text will be :bold[bolded]! This directive is an example of how directives can be created and shouldn't be used in actual markdown documents.
 
 ### Crossed out
 
-The `:crossedout[content]` directive will cross out the content ~~like this~~. It's another example directive that mirrors the functionality of markdown's own syntax.
-
-Example:
-
+:::details
+::summary[`:crossedout[This is cool!]`]
 :crossedout[This is cool!]
+:::
+
+The `:crossedout[content]` directive will cross out the content ~~like this~~. It's another example directive that mirrors the functionality of markdown's own syntax.
 
 ## Leaf Directives
 
