@@ -12,7 +12,7 @@ import remarkDirective from 'remark-directive';
 import remarkGfm from 'remark-gfm';
 import stampit from 'stampit';
 import remarkCustomDirectives from './plugins/remarkCustomDirectives';
-import type { Directives } from './plugins/remarkCustomDirectives';
+import directives from './directives';
 
 const { compose, deepProps } = stampit;
 
@@ -39,45 +39,6 @@ const schema = compose<Schema>(
 		}
 	})
 );
-
-const directives: Directives = {
-	textDirective: {
-		// example text directive that simply bolds the content
-		async bold(node) {
-			const data = node.data || (node.data = {});
-			data.hName = 'b';
-		},
-		async crossedout(node) {
-			const data = node.data || (node.data = {});
-			data.hName = 'del';
-		}
-	},
-	containerDirective: {
-		async inlineList(node) {
-			const data = node.data || (node.data = {});
-			data.hProperties = { class: 'inline-list' };
-		},
-		async block(node) {
-			const { class: classes } = node.attributes;
-			const data = node.data || (node.data = {});
-			data.hProperties = { class: classes };
-		},
-		async details(node) {
-			const data = node.data || (node.data = {});
-			data.hName = 'details';
-		}
-	},
-	leafDirective: {
-		async pagelatest(node) {
-			const data = node.data || (node.data = {});
-			data.hName = 'b';
-		},
-		async summary(node) {
-			const data = node.data || (node.data = {});
-			data.hName = 'summary';
-		}
-	}
-};
 
 const processor = unified()
 	.use(remarkParse)

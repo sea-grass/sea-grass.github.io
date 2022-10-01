@@ -3,6 +3,11 @@ import cssMinifier from '$lib/css';
 import { MINIFY_CSS } from '$lib/variables';
 
 const errors = {
+	noSlugFound() {
+		return new error(
+			'Each page must contain a slug property in its frontmatter.'
+		);
+	},
 	duplicateSlugFound(slug: string) {
 		return new Error('Duplicate Slug found: [' + slug + ']');
 	}
@@ -15,12 +20,19 @@ const files = {
 	})
 };
 
-let _pages: Promise<PageMap> | undefined;
+let _pages:
+	| Promise<{ slugs: PageMap; collections: PageCollectionMap }>
+	| undefined;
 export const pages = {
 	async load(slug: string) {
 		if (!_pages) _pages = loadPages();
 
-		return (await _pages)[slug];
+		return (await _pages).slugs[slug];
+	},
+	async collection(name: string) {
+		if (!_pages) _pages = loadPages();
+
+		return (await _pages).collections[name];
 	}
 };
 
@@ -37,20 +49,45 @@ type PageMap = {
 	[slug: string]: DocumentResult;
 };
 
-async function loadPages(): Promise<PageMap> {
+type PageCollectionMap = {
+	[collection: string]: DocumentResult[];
+};
+
+async function loadPages(): Promise<{
+	slugs: PageMap;
+	collections: PageCollectionMap;
+}> {
 	const documents = await Promise.all(
 		Object.values(files.pages).map(
 			async (getMarkdown) => await getMarkdown().then(process)
 		)
 	);
 
-	return documents.reduce<PageMap>((pageMap, document) => {
-		const slug = (document.frontmatter as any).slug as string;
+	const slugs: PageMap = {};
+	const collections: PageCollectionMap = {};
 
-		if (pageMap[slug]) throw errors.duplicateSlugFound(slug);
-		pageMap[slug] = document;
-		return pageMap;
-	}, {});
+	for (const document of documents) {
+		const frontmatter = document.frontmatter as any;
+		const slug = frontmatter.slug as string | undefined;
+		if (!slug) throw errors.noSlugFound();
+		const collection = frontmatter.collection as string | undefined;
+
+		if (slugs[slug]) throw errors.duplicateSlugFound(slug);
+		slugs[slug] = document;
+
+		if (collection) {
+			console.log(
+				'Adding slug(' + slug + ') to collection(' + collection + ')'
+			);
+			if (!collections[collection]) collections[collection] = [];
+
+			collections[collection].push(document);
+		} else {
+			console.log('Loaded slug(' + slug + ')');
+		}
+	}
+
+	return { slugs, collections };
 }
 
 type ThemeMap = {
