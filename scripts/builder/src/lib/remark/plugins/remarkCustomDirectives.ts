@@ -1,7 +1,11 @@
 import { visit } from 'unist-util-visit';
 import type { Plugin } from 'unified';
 import type { Root } from 'mdast';
-import type { TextDirective, ContainerDirective, LeafDirective } from 'mdast-util-directive';
+import type {
+	TextDirective,
+	ContainerDirective,
+	LeafDirective
+} from 'mdast-util-directive';
 
 export interface Directives {
 	textDirective?: {
@@ -15,7 +19,9 @@ export interface Directives {
 	};
 }
 
-const remarkCustomDirectives: Plugin<[Directives], Root> = (directives: Directives) => {
+const remarkCustomDirectives: Plugin<[Directives], Root> = (
+	directives: Directives
+) => {
 	return async (tree) => {
 		// we want to be able to execute our directives async
 		// and wait for them to finish.so we capture the promises

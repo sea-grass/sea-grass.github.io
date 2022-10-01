@@ -11,7 +11,8 @@ import remarkHeadingId from 'remark-heading-id';
 import remarkDirective from 'remark-directive';
 import remarkGfm from 'remark-gfm';
 import stampit from 'stampit';
-import remarkCustomDirectives, { type Directives } from './plugins/remarkCustomDirectives';
+import remarkCustomDirectives from './plugins/remarkCustomDirectives';
+import type { Directives } from './plugins/remarkCustomDirectives';
 
 const { compose, deepProps } = stampit;
 
@@ -96,7 +97,9 @@ interface Heading {
 
 export async function process(markdown: string): Promise<DocumentResult> {
 	const result = await processor.process(markdown);
-	const titleHeading = (result.data.headings as Heading[]).filter(({ depth }) => depth === 1);
+	const titleHeading = (result.data.headings as Heading[]).filter(
+		({ depth }) => depth === 1
+	);
 	if (titleHeading.length !== 1) {
 		throw new Error(
 			'There should be one and only one top-level heading in the document. Found ' +

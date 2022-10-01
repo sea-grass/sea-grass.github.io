@@ -1,5 +1,9 @@
 /** A build-time flag to determine whether HTML responses should be minified or not */
 export const MINIFY_HTML: boolean =
-	import.meta.env.VITE_MINIFY_HTML === undefined ? true : import.meta.env.VITE_MINIFY_HTML === '1';
+	import.meta.env.VITE_MINIFY_HTML === undefined
+		? true
+		: import.meta.env.VITE_MINIFY_HTML === '1';
 export const MINIFY_CSS: boolean =
-	import.meta.env.VITE_MINIFY_CSS === undefined ? true : import.meta.env.VITE_MINIFY_CSS === '1';
+	import.meta.env.VITE_MINIFY_CSS === undefined
+		? true
+		: import.meta.env.VITE_MINIFY_CSS === '1';
