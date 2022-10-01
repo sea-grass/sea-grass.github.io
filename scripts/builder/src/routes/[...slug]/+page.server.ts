@@ -1,25 +1,21 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
-import { loadPages, loadThemes } from '$lib/site';
+import { pages, themes } from '$lib/site';
 
 export const prerender = true;
 export const csr = false;
-
-const pages = loadPages();
-const themes = loadThemes();
 
 export const load: PageServerLoad = async ({ params }) => {
 	// svelte populates the url param without the prefix
 	const slug = '/' + params.slug;
 
-	const page = (await pages).find((page) => (page.frontmatter as any).slug === slug);
+	const page = await pages.load(slug);
 
 	if (page) {
-		let theme = 'default';
 		const frontmatter = page.frontmatter as any;
-		if (frontmatter.theme) theme = frontmatter.theme;
+		const theme = frontmatter.theme || 'default';
 
-		const css: string = (await themes)[theme] || '';
+		const css: string = (await themes.load(theme)) || '';
 		return {
 			href: frontmatter.slug as string,
 			html: page.html,
