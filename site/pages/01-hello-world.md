@@ -27,3 +27,7 @@ Some projects I'm currently working on:
 ## Websites
 
 I recently developed the website for [The Truth in Journalism Conference](https://thetijproject.ca), using Elder.js to generate the site and markdown/yaml to manage the content.
+
+:::block{class="hiding"}
+[Directive demo](/directives)
+:::

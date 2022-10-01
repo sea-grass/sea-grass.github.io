@@ -10,10 +10,8 @@ import remarkHeadings from '@vcarl/remark-headings';
 import remarkHeadingId from 'remark-heading-id';
 import remarkDirective from 'remark-directive';
 import remarkGfm from 'remark-gfm';
-import { visit } from 'unist-util-visit';
 import stampit from 'stampit';
-import type { Plugin } from 'unified';
-import type { Root } from 'mdast';
+import remarkCustomDirectives, { type Directives } from './plugins/remarkCustomDirectives';
 
 const { compose, deepProps } = stampit;
 
@@ -40,51 +38,35 @@ const schema = compose(
 	})
 );
 
-const directives = {
+const directives: Directives = {
 	textDirective: {
 		// example text directive that simply bolds the content
-		bold(node) {
+		async bold(node) {
 			const data = node.data || (node.data = {});
 			data.hName = 'b';
 		},
-		crossedout(node) {
+		async crossedout(node) {
 			const data = node.data || (node.data = {});
-			data.hName = 'b';
-			data.hProperties = node.attributes;
+			data.hName = 'del';
 		}
 	},
 	containerDirective: {
-		inlineList(node) {
+		async inlineList(node) {
 			const data = node.data || (node.data = {});
 			data.hProperties = { class: 'inline-list' };
+		},
+		async block(node) {
+			const { class: classes } = node.attributes;
+			const data = node.data || (node.data = {});
+			data.hProperties = { class: classes };
+		}
+	},
+	leafDirective: {
+		async pagelatest(node) {
+			const data = node.data || (node.data = {});
+			data.hName = 'b';
 		}
 	}
-};
-
-// TODO: Add support for defining custom directives
-const remarkCustomDirectives: Plugin<[], Root> = () => {
-	return (tree) => {
-		visit(tree, (node) => {
-			/**
-			 * We'll process nodes that match one of these directive types.
-			 * textDirective represents inline content.
-			 * leafDirective represents block content.
-			 * containerDirective represents a container element and wraps more content.
-			 */
-			if (
-				node.type === 'textDirective' ||
-				node.type === 'leafDirective' ||
-				node.type === 'containerDirective'
-			) {
-				const directive = directives[node.type]?.[node.name];
-				if (directive) {
-					// process the node using the directive function
-					directive(node);
-					return;
-				}
-			}
-		});
-	};
 };
 
 const processor = unified()
@@ -95,7 +77,7 @@ const processor = unified()
 	.use(remarkHeadings)
 	.use(remarkHeadingId)
 	.use(remarkDirective)
-	.use(remarkCustomDirectives)
+	.use(remarkCustomDirectives, directives)
 	.use(remarkRehype)
 	.use(rehypeSanitize, schema())
 	.use(rehypeStringify);
