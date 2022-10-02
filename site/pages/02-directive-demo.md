@@ -2,7 +2,7 @@
 slug: /directives
 ---
 
-[Back home](/)
+::partial[nav]
 
 # Directives
 

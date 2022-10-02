@@ -70,7 +70,9 @@ const directives: Directives = {
 			const collection = await pages.collection(name);
 			if (collection && collection.length > 0) {
 				const data = node.data || (node.data = {});
-				const results = await Promise.all(collection.map(render));
+				const results = await Promise.all(
+					collection.map((page) => render(page))
+				);
 
 				data.hName = 'ol';
 				data.hProperties = { class: 'collection' };

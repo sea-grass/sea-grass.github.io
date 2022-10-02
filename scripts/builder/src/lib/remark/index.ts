@@ -8,6 +8,7 @@ import extract from 'remark-extract-frontmatter';
 import { parse as yaml } from 'yaml';
 import remarkHeadings from '@vcarl/remark-headings';
 import remarkHeadingId from 'remark-heading-id';
+import remarkImageAttributes from './plugins/remarkImageAttributes';
 import remarkDirective from 'remark-directive';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
@@ -77,11 +78,20 @@ export function getProcessor(directives: Directives) {
 		.use(remarkGfm)
 		.use(remarkHeadings)
 		.use(remarkHeadingId)
+		.use(remarkImageAttributes)
 		.use(remarkDirective)
 		.use(remarkCustomDirectives, directives)
 		.use(remarkRehype)
 		.use(rehypeRaw)
-		.use(rehypeSanitize, schema())
+		// Todo: Fix conflict between rehype-raw and rehype-sanitize
+		// Before I added rehype-raw, rehype-sanitize would respect
+		// the hast returned from directives.
+		// I added rehype-raw to support the `::partial` directive,
+		// which renders the html and injects it as a raw node.
+		// (There might be a better way to do that, not sure.)
+		// I'd still like to use rehype-sanitize, so I need
+		// to look into this later.
+		// .use(rehypeSanitize, schema())
 		.use(rehypeStringify);
 
 	return {
