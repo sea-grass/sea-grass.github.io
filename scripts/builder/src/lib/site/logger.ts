@@ -1,4 +1,7 @@
-import loglevel, { getLogger, type Logger } from 'loglevel';
+import loglevel from 'loglevel';
+import type { Logger } from 'loglevel';
+
+const { getLogger } = loglevel;
 
 const logger = getLogger('site');
 logger.setLevel('INFO');

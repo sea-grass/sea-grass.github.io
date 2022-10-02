@@ -1,10 +1,13 @@
-import { pages, render } from '$lib/site';
+import { pages, partials, render } from '$lib/site';
 import type { Directives } from '../remark/plugins/remarkCustomDirectives';
 import { h } from 'hastscript';
+import { u } from 'unist-builder';
 import type { LeafDirective } from 'mdast-util-directive';
 
 const errors = {
-	expectedTextNode: () => new Error('Expected text node')
+	expectedTextNode: () => new Error('Expected text node'),
+	partialNotFound: (id: string) =>
+		new Error('Could not found partial(' + id + ')')
 };
 
 const directives: Directives = {
@@ -83,6 +86,18 @@ const directives: Directives = {
 				const data = node.data || (node.data = {});
 				data.hChildren = [];
 			}
+		},
+		async partial(node) {
+			const id = getLeafText(node);
+			console.log('Finding partial(' + id + ')');
+			const partial = await partials.load(id);
+			if (!partial) throw errors.partialNotFound(id);
+
+			const result = await render(partial, { partial: true });
+			const data = node.data || (node.data = {});
+			data.hName = 'div';
+			data.hProperties = { class: 'partial' };
+			data.hChildren = [u('raw', result.html)];
 		},
 		async summary(node) {
 			const data = node.data || (node.data = {});

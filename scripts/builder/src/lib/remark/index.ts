@@ -10,6 +10,7 @@ import remarkHeadings from '@vcarl/remark-headings';
 import remarkHeadingId from 'remark-heading-id';
 import remarkDirective from 'remark-directive';
 import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import stampit from 'stampit';
 import remarkCustomDirectives, {
 	type Directives
@@ -24,6 +25,9 @@ const errors = {
 				numFound +
 				' top-level headings.'
 		);
+	},
+	partialContainsTopLevelHeading() {
+		return new Error('Partials must not contain top-level headings.');
 	}
 };
 
@@ -54,8 +58,8 @@ const schema = compose<Schema>(
 
 export interface DocumentResult {
 	html: string;
-	title: string;
-	description: string;
+	title?: string;
+	description?: string;
 	frontmatter: object;
 	raw: string;
 }
@@ -76,6 +80,7 @@ export function getProcessor(directives: Directives) {
 		.use(remarkDirective)
 		.use(remarkCustomDirectives, directives)
 		.use(remarkRehype)
+		.use(rehypeRaw)
 		.use(rehypeSanitize, schema())
 		.use(rehypeStringify);
 
@@ -97,6 +102,21 @@ export function getProcessor(directives: Directives) {
 				raw: markdown,
 				title,
 				description,
+				frontmatter: result.data
+			};
+		},
+		async processPartial(markdown: string): Promise<DocumentResult> {
+			const result = await processor.process(markdown);
+			const titleHeading = (result.data.headings as Heading[]).filter(
+				({ depth }) => depth === 1
+			);
+			if (titleHeading.length === 1) {
+				throw errors.partialContainsTopLevelHeading();
+			}
+
+			return {
+				html: String(result.value),
+				raw: markdown,
 				frontmatter: result.data
 			};
 		}

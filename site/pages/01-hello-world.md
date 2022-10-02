@@ -2,7 +2,7 @@
 slug: /
 ---
 
-![banner](banner.webp)
+::partial[nav]
 
 # Chris Grass
 

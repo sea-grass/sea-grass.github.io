@@ -12,6 +12,12 @@ type Page = {
 	collection?: string;
 };
 
+type Partial = {
+	path: string;
+	frontmatter: any;
+	document: string;
+};
+
 type PageMap = {
 	[slug: string]: Page;
 };
@@ -21,6 +27,10 @@ type PageCollectionMap = {
 
 type ThemeMap = {
 	[theme: string]: string;
+};
+
+type PartialMap = {
+	[id: string]: Partial;
 };
 
 const errors = {
@@ -36,6 +46,16 @@ const errors = {
 		return new Error(
 			'Each document must contain frontmatter at the start of the file.'
 		);
+	},
+	partials: {
+		noIdFound() {
+			return new Error(
+				'Each partial must contain an id property in its frontmatter.'
+			);
+		},
+		duplicateIdFound(id: string) {
+			return new Error('Duplicate id found: [' + id + ']');
+		}
 	}
 };
 
@@ -43,12 +63,16 @@ const files = {
 	pages: import.meta.glob('$lib/../../../../site/pages/**/*.md', { as: 'raw' }),
 	themes: import.meta.glob('$lib/../../../../site/themes/**/*.css', {
 		as: 'raw'
+	}),
+	partials: import.meta.glob('$lib/../../../../site/partials/**/*.md', {
+		as: 'raw'
 	})
 };
 
 const contentPromises = {
 	pages: readPages(files.pages),
-	themes: readThemes(files.themes)
+	themes: readThemes(files.themes),
+	partials: readPartials(files.partials)
 };
 
 const processor = getProcessor(directives);
@@ -119,8 +143,8 @@ async function readPages(
 	return await Promise.all(entries.map(loadContent)).then(parseDocuments);
 }
 
-function readThemes(themes: Record<string, () => Promise<string>>) {
-	return Promise.all(
+async function readThemes(themes: Record<string, () => Promise<string>>) {
+	return await Promise.all(
 		Object.entries(themes).map(async ([name, getCss]) => {
 			// I know that the themes directory is the 4th token,
 			// so the theme name will be the 5th token
@@ -148,6 +172,41 @@ function readThemes(themes: Record<string, () => Promise<string>>) {
 		});
 }
 
+async function readPartials(
+	partials: Record<string, () => Promise<string>>
+): Promise<PartialMap> {
+	type PartialEntry = [path: string, content: string];
+	const entries = Object.entries(partials);
+
+	const loadContent = async ([
+		path,
+		load
+	]: typeof entries[number]): Promise<PartialEntry> => [path, await load()];
+
+	const parsePartials = (entries: PartialEntry[]): PartialMap => {
+		const partials: PartialMap = {};
+
+		for (const [path, document] of entries) {
+			const frontmatter = parseFrontmatter(document);
+			const id = frontmatter.id as string | undefined;
+			if (!id) throw errors.partials.noIdFound();
+			if (partials[id]) throw errors.partials.duplicateIdFound(id);
+
+			const partial: Partial = {
+				path,
+				frontmatter,
+				document
+			};
+			logger.info('Loaded partial with id(' + id + ')');
+			partials[id] = partial;
+		}
+
+		return partials;
+	};
+
+	return await Promise.all(entries.map(loadContent)).then(parsePartials);
+}
+
 export const pages = {
 	async load(slug: string) {
 		const pages = await contentPromises.pages;
@@ -167,6 +226,18 @@ export const themes = {
 	}
 };
 
-export async function render(page: Page): Promise<DocumentResult> {
-	return await processor.process(page.document);
+export const partials = {
+	async load(id: string) {
+		const partials = await contentPromises.partials;
+		return partials[id];
+	}
+};
+
+export async function render(
+	document: Page | Partial,
+	options?: { partial: boolean }
+): Promise<DocumentResult> {
+	if (options?.partial)
+		return await processor.processPartial(document.document);
+	else return await processor.process(document.document);
 }
