@@ -80,9 +80,8 @@ export async function process(markdown: string): Promise<DocumentResult> {
 	}
 	// extract the title from the top level heading
 	const title = titleHeading[0].value;
+	const description = (result.data?.description as string) || '';
 
-	let description = '';
-	if (result.data.description) description = result.data.description as string;
 	return {
 		html: String(result.value),
 		raw: markdown,

@@ -1,6 +1,5 @@
 import type { PageServerLoad } from './$types';
-import { error } from '@sveltejs/kit';
-import { pages, themes } from '$lib/site';
+import { pages, render, themes } from '$lib/site';
 
 export const prerender = true;
 export const csr = false;
@@ -10,21 +9,19 @@ export const load: PageServerLoad = async ({ params }) => {
 	const slug = '/' + params.slug;
 
 	const page = await pages.load(slug);
+	const result = await render(page);
+	const { html, title, description } = result;
 
-	if (page) {
-		const frontmatter = page.frontmatter as any;
-		const theme = frontmatter.theme || 'default';
+	const frontmatter = page.frontmatter as any;
+	const theme = frontmatter.theme || 'default';
 
-		const css: string = (await themes.load(theme)) || '';
-		return {
-			href: frontmatter.slug as string,
-			html: page.html,
-			frontmatter,
-			title: page.title,
-			description: page.description,
-			css
-		};
-	}
-
-	throw error(404, 'not found');
+	const css: string = (await themes.load(theme)) || '';
+	return {
+		href: frontmatter.slug as string,
+		html,
+		frontmatter,
+		title,
+		description,
+		css
+	};
 };

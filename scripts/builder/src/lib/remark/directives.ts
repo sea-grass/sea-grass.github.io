@@ -1,5 +1,6 @@
-import { pages } from '$lib/site';
+import { pages, render } from '$lib/site';
 import type { Directives } from './plugins/remarkCustomDirectives';
+import { h } from 'hastscript';
 
 const errors = {
 	expectedTextNode: () => new Error('Expected text node')
@@ -33,21 +34,33 @@ const directives: Directives = {
 		}
 	},
 	leafDirective: {
-		/**
-		 * Todo: Site content (markdown) is loaded and processed at the same time,
-		 * so if I try to access a collection to include a snippet from one of its items
-		 * from inside a directive, which gets called while the content is processed,
-		 * I'm stuck in deadlock.
-		 */
 		async pagelatest(node) {
 			const child = node.children[0];
 			if (child?.type !== 'text') throw errors.expectedTextNode();
 			const { value: name } = child;
 			console.log('Finding latest in collection(' + name + ')');
 			const collection = await pages.collection(name);
-			console.log(collection);
-			const data = node.data || (node.data = {});
-			data.hName = 'h1';
+			// assume collection is already sorted such that the first item is the latest
+			const page = collection?.[0];
+			if (page) {
+				const data = node.data || (node.data = {});
+				const result = await render(page);
+				data.hName = 'div';
+				data.hProperties = { class: 'pagelatest' };
+				data.hChildren = [
+					h(
+						'a',
+						{ href: (result.frontmatter as any).slug as string },
+						result.title
+					)
+				];
+			} else {
+				// The collection is empty or does not exist,
+				// so for now we'll silently exclude this node
+				// from rendering.
+				const data = node.data || (node.data = {});
+				data.hChildren = [];
+			}
 		},
 		async summary(node) {
 			const data = node.data || (node.data = {});
