@@ -1,8 +1,9 @@
-import { process, type DocumentResult } from '$lib/remark';
+import { getProcessor, type DocumentResult } from '$lib/remark';
 import cssMinifier from '$lib/css';
 import { MINIFY_CSS } from '$lib/variables';
 import yaml from 'yaml';
 import logger from './logger';
+import directives from './directives';
 
 type Page = {
 	path: string;
@@ -50,12 +51,19 @@ const contentPromises = {
 	themes: readThemes(files.themes)
 };
 
+const processor = getProcessor(directives);
+
 function parseFrontmatter(document: string) {
-	const fmRegex = new RegExp('^---(.*)---$', 'msg');
-	const result = fmRegex.exec(document);
-	if (!result) throw errors.missingFrontmatter();
-	if (result.index !== 0) throw errors.missingFrontmatter();
-	return yaml.parse(result[1]);
+	const frontmatterFence = '---\n';
+	if (!document.startsWith(frontmatterFence)) throw errors.missingFrontmatter();
+
+	const startIndex = frontmatterFence.length;
+	// we search for the last fence block after the first fence block
+	const endIndex = document.indexOf(frontmatterFence, startIndex);
+	if (endIndex < 0) throw errors.missingFrontmatter();
+
+	const frontmatter = document.slice(startIndex, endIndex);
+	return yaml.parse(frontmatter);
 }
 
 async function readPages(
@@ -146,9 +154,8 @@ export const pages = {
 		return pages.slugs[slug];
 	},
 	async collection(name: string) {
-		const collections = (await contentPromises.pages).collections;
-
-		return collections[name];
+		const pages = await contentPromises.pages;
+		return pages.collections[name];
 	}
 };
 
@@ -161,5 +168,5 @@ export const themes = {
 };
 
 export async function render(page: Page): Promise<DocumentResult> {
-	return await process(page.document);
+	return await processor.process(page.document);
 }

@@ -1,6 +1,7 @@
 import { pages, render } from '$lib/site';
-import type { Directives } from './plugins/remarkCustomDirectives';
+import type { Directives } from '../remark/plugins/remarkCustomDirectives';
 import { h } from 'hastscript';
+import type { LeafDirective } from 'mdast-util-directive';
 
 const errors = {
 	expectedTextNode: () => new Error('Expected text node')
@@ -35,9 +36,7 @@ const directives: Directives = {
 	},
 	leafDirective: {
 		async pagelatest(node) {
-			const child = node.children[0];
-			if (child?.type !== 'text') throw errors.expectedTextNode();
-			const { value: name } = child;
+			const name = getLeafText(node);
 			console.log('Finding latest in collection(' + name + ')');
 			const collection = await pages.collection(name);
 			// assume collection is already sorted such that the first item is the latest
@@ -62,11 +61,40 @@ const directives: Directives = {
 				data.hChildren = [];
 			}
 		},
+		async collection(node) {
+			const name = getLeafText(node);
+			console.log('Finding collection(' + name + ')');
+			const collection = await pages.collection(name);
+			if (collection && collection.length > 0) {
+				const data = node.data || (node.data = {});
+				const results = await Promise.all(collection.map(render));
+
+				data.hName = 'ol';
+				data.hProperties = { class: 'collection' };
+				data.hChildren = results.map((result) => {
+					const slug = (result.frontmatter as any).slug as string;
+					const title = result.title;
+					return h('li', {}, h('a', { href: slug }, title));
+				});
+			} else {
+				// The collection is empty or does not exist,
+				// so for now we'll silently exclude this node
+				// from rendering.
+				const data = node.data || (node.data = {});
+				data.hChildren = [];
+			}
+		},
 		async summary(node) {
 			const data = node.data || (node.data = {});
 			data.hName = 'summary';
 		}
 	}
 };
+
+function getLeafText(node: LeafDirective): string {
+	const child = node.children[0];
+	if (child?.type !== 'text') throw errors.expectedTextNode();
+	return child.value;
+}
 
 export default directives;

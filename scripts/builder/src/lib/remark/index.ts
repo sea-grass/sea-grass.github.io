@@ -11,10 +11,21 @@ import remarkHeadingId from 'remark-heading-id';
 import remarkDirective from 'remark-directive';
 import remarkGfm from 'remark-gfm';
 import stampit from 'stampit';
-import remarkCustomDirectives from './plugins/remarkCustomDirectives';
-import directives from './directives';
+import remarkCustomDirectives, {
+	type Directives
+} from './plugins/remarkCustomDirectives';
 
 const { compose, deepProps } = stampit;
+
+const errors = {
+	expectedSingleTopLevelHeading(numFound: number) {
+		return new Error(
+			'There should be one and only one top-level heading in the document. Found ' +
+				numFound +
+				' top-level headings.'
+		);
+	}
+};
 
 /**
  * Custom heading ids by default are generated with a prefix
@@ -35,23 +46,11 @@ const schema = compose<Schema>(
 	deepProps<Schema>({
 		clobberPrefix: UNSAFE_EMPTY_CLOBBER_PREFIX,
 		attributes: {
-			div: ['class']
+			div: ['class'],
+			ol: ['class']
 		}
 	})
 );
-
-const processor = unified()
-	.use(remarkParse)
-	.use(frontmatter)
-	.use(extract, { yaml: yaml })
-	.use(remarkGfm)
-	.use(remarkHeadings)
-	.use(remarkHeadingId)
-	.use(remarkDirective)
-	.use(remarkCustomDirectives, directives)
-	.use(remarkRehype)
-	.use(rehypeSanitize, schema())
-	.use(rehypeStringify);
 
 export interface DocumentResult {
 	html: string;
@@ -66,27 +65,40 @@ interface Heading {
 	value: string;
 }
 
-export async function process(markdown: string): Promise<DocumentResult> {
-	const result = await processor.process(markdown);
-	const titleHeading = (result.data.headings as Heading[]).filter(
-		({ depth }) => depth === 1
-	);
-	if (titleHeading.length !== 1) {
-		throw new Error(
-			'There should be one and only one top-level heading in the document. Found ' +
-				titleHeading.length +
-				' top-level headings.'
-		);
-	}
-	// extract the title from the top level heading
-	const title = titleHeading[0].value;
-	const description = (result.data?.description as string) || '';
+export function getProcessor(directives: Directives) {
+	const processor = unified()
+		.use(remarkParse)
+		.use(frontmatter)
+		.use(extract, { yaml: yaml })
+		.use(remarkGfm)
+		.use(remarkHeadings)
+		.use(remarkHeadingId)
+		.use(remarkDirective)
+		.use(remarkCustomDirectives, directives)
+		.use(remarkRehype)
+		.use(rehypeSanitize, schema())
+		.use(rehypeStringify);
 
 	return {
-		html: String(result.value),
-		raw: markdown,
-		title,
-		description,
-		frontmatter: result.data
+		async process(markdown: string): Promise<DocumentResult> {
+			const result = await processor.process(markdown);
+			const titleHeading = (result.data.headings as Heading[]).filter(
+				({ depth }) => depth === 1
+			);
+			if (titleHeading.length !== 1) {
+				throw errors.expectedSingleTopLevelHeading(titleHeading.length);
+			}
+			// extract the title from the top level heading
+			const title = titleHeading[0].value;
+			const description = (result.data?.description as string) || '';
+
+			return {
+				html: String(result.value),
+				raw: markdown,
+				title,
+				description,
+				frontmatter: result.data
+			};
+		}
 	};
 }
