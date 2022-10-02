@@ -12,6 +12,7 @@ import remarkImageAttributes from './plugins/remarkImageAttributes';
 import remarkDirective from 'remark-directive';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
+import rehypeHighlight from 'rehype-highlight';
 import stampit from 'stampit';
 import remarkCustomDirectives, {
 	type Directives
@@ -83,6 +84,7 @@ export function getProcessor(directives: Directives) {
 		.use(remarkCustomDirectives, directives)
 		.use(remarkRehype)
 		.use(rehypeRaw)
+		.use(rehypeHighlight)
 		// Todo: Fix conflict between rehype-raw and rehype-sanitize
 		// Before I added rehype-raw, rehype-sanitize would respect
 		// the hast returned from directives.
@@ -91,6 +93,9 @@ export function getProcessor(directives: Directives) {
 		// (There might be a better way to do that, not sure.)
 		// I'd still like to use rehype-sanitize, so I need
 		// to look into this later.
+		// Todo: Once rehype-sanitize is re-enabled, I'll also
+		// need to make changes to the schema to allow highlighting
+		// (https://github.com/rehypejs/rehype-highlight#example-sanitation)
 		// .use(rehypeSanitize, schema())
 		.use(rehypeStringify);
 

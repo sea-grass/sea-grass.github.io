@@ -1,6 +1,6 @@
 import { visit } from 'unist-util-visit';
 import type { Plugin } from 'unified';
-import type { Root } from 'mdast';
+import type { Root, Text } from 'mdast';
 import type {
 	TextDirective,
 	ContainerDirective,
@@ -35,6 +35,16 @@ const remarkCustomDirectives: Plugin<[Directives], Root> = (
 			 * containerDirective represents a container element and wraps more content.
 			 */
 			if (node.type === 'textDirective') {
+				const directive = directives.textDirective?.[node.name];
+				if (directive) {
+					promises.push(directive(node));
+				} else {
+					// unknown text directive, so let's change it to a text node
+					const text = ':' + node.name;
+					const textNode = node as Text;
+					textNode.type = 'text';
+					textNode.value = text;
+				}
 				promises.push(directives.textDirective?.[node.name]?.(node));
 			} else if (node.type === 'leafDirective') {
 				promises.push(directives.leafDirective?.[node.name]?.(node));
