@@ -66,6 +66,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"loglevel": "^1.8.0"
+		"loglevel": "^1.8.0",
+		"remark-custom-directives": "^1.0.0"
 	}
 }

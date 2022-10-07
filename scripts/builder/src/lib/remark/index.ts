@@ -16,7 +16,7 @@ import rehypeHighlight from 'rehype-highlight';
 import stampit from 'stampit';
 import remarkCustomDirectives, {
 	type Directives
-} from './plugins/remarkCustomDirectives';
+} from 'remark-custom-directives';
 
 const { compose, deepProps } = stampit;
 
