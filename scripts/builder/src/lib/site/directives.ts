@@ -1,8 +1,13 @@
-import { pages, partials, render } from '$lib/site';
-import type { Directives } from '../remark/plugins/remarkCustomDirectives';
+import type { Directives } from 'remark-custom-directives';
+import type {
+	LeafDirective,
+	TextDirective,
+	ContainerDirective
+} from 'mdast-util-directive';
 import { h } from 'hastscript';
 import { u } from 'unist-builder';
-import type { LeafDirective } from 'mdast-util-directive';
+import { pages, partials, render } from '$lib/site';
+import type { Element } from 'hast';
 
 const errors = {
 	expectedTextNode: () => new Error('Expected text node'),
@@ -10,52 +15,46 @@ const errors = {
 		new Error('Could not found partial(' + id + ')')
 };
 
+type Directive = LeafDirective | ContainerDirective | TextDirective;
+
+const make =
+	(...hArgs: Parameters<typeof h>) =>
+	async <TDirective extends Directive>(node: TDirective) => {
+		const data = node.data || (node.data = {});
+		const result = h(...hArgs);
+		data.hName = result.tagName;
+		if (result.properties) data.hProperties = result.properties;
+		if (result.children.length > 0) data.hChildren = result.children;
+	};
+
 const directives: Directives = {
 	textDirective: {
-		// example text directive that simply bolds the content
-		async bold(node) {
-			const data = node.data || (node.data = {});
-			data.hName = 'b';
-		},
-		async crossedout(node) {
-			const data = node.data || (node.data = {});
-			data.hName = 'del';
-		}
+		bold: make('b'),
+		crossedout: make('del')
 	},
 	containerDirective: {
-		async inlineList(node) {
-			const data = node.data || (node.data = {});
-			data.hProperties = { class: 'inline-list' };
-		},
+		inlineList: make('.inline-list'),
+		details: make('details'),
 		async block(node) {
 			const { class: classes } = node.attributes;
 			const data = node.data || (node.data = {});
 			data.hProperties = { class: classes };
-		},
-		async details(node) {
-			const data = node.data || (node.data = {});
-			data.hName = 'details';
 		}
 	},
 	leafDirective: {
-		async pagelatest(node) {
+		summary: make('summary'),
+		async pagelatest(node: LeafDirective) {
 			const name = getLeafText(node);
 			console.log('Finding latest in collection(' + name + ')');
 			const collection = await pages.collection(name);
 			// assume collection is already sorted such that the first item is the latest
 			const page = collection?.[0];
 			if (page) {
-				const data = node.data || (node.data = {});
 				const result = await render(page);
-				data.hName = 'div';
-				data.hProperties = { class: 'pagelatest' };
-				data.hChildren = [
-					h(
-						'a',
-						{ href: (result.frontmatter as any).slug as string },
-						result.title
-					)
-				];
+				const href = (result.frontmatter as any).slug as string;
+				const title = result.title;
+
+				make('.pagelatest', [h('a', { href }, title)])(node);
 			} else {
 				// The collection is empty or does not exist,
 				// so for now we'll silently exclude this node
@@ -64,23 +63,23 @@ const directives: Directives = {
 				data.hChildren = [];
 			}
 		},
-		async collection(node) {
+		async collection(node: LeafDirective) {
 			const name = getLeafText(node);
 			console.log('Finding collection(' + name + ')');
 			const collection = await pages.collection(name);
 			if (collection && collection.length > 0) {
-				const data = node.data || (node.data = {});
 				const results = await Promise.all(
 					collection.map((page) => render(page))
 				);
 
-				data.hName = 'ol';
-				data.hProperties = { class: 'collection' };
-				data.hChildren = results.map((result) => {
-					const slug = (result.frontmatter as any).slug as string;
-					const title = result.title;
-					return h('li', {}, h('a', { href: slug }, title));
-				});
+				const items = results
+					.map((result) => ({
+						href: (result.frontmatter as any).slug as string,
+						title: result.title
+					}))
+					.map(({ href, title }) => h('li', h('a', { href }, title)));
+
+				make('ol.collection', items)(node);
 			} else {
 				// The collection is empty or does not exist,
 				// so for now we'll silently exclude this node
@@ -89,21 +88,15 @@ const directives: Directives = {
 				data.hChildren = [];
 			}
 		},
-		async partial(node) {
+		async partial(node: LeafDirective) {
 			const id = getLeafText(node);
 			console.log('Finding partial(' + id + ')');
 			const partial = await partials.load(id);
 			if (!partial) throw errors.partialNotFound(id);
 
 			const result = await render(partial, { partial: true });
-			const data = node.data || (node.data = {});
-			data.hName = 'div';
-			data.hProperties = { class: 'partial' };
-			data.hChildren = [u('raw', result.html)];
-		},
-		async summary(node) {
-			const data = node.data || (node.data = {});
-			data.hName = 'summary';
+
+			make('.partial', [u('raw', result.html)])(node);
 		}
 	}
 };
