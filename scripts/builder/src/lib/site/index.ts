@@ -60,11 +60,11 @@ const errors = {
 };
 
 const files = {
-	pages: import.meta.glob('$lib/../../../../site/pages/**/*.md', { as: 'raw' }),
-	themes: import.meta.glob('$lib/../../../../site/themes/**/*.css', {
+	pages: import.meta.glob('$site/pages/**/*.md', { as: 'raw' }),
+	themes: import.meta.glob('$site/themes/**/*.css', {
 		as: 'raw'
 	}),
-	partials: import.meta.glob('$lib/../../../../site/partials/**/*.md', {
+	partials: import.meta.glob('$site/partials/**/*.md', {
 		as: 'raw'
 	})
 };
@@ -164,7 +164,9 @@ async function readThemes(themes: Record<string, () => Promise<string>>) {
 		.then(async (themeMap) => {
 			if (MINIFY_CSS) {
 				for (const theme in themeMap) {
-					const { css } = await cssMinifier.process(themeMap[theme]);
+					logger.info('Minifying theme (' + theme + ')');
+					const result = await cssMinifier.process(themeMap[theme]);
+					const { css } = result;
 					themeMap[theme] = css;
 				}
 			}

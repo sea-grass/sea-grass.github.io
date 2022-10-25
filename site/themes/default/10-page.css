@@ -1,0 +1,16 @@
+* {
+    box-sizing: border-box;
+}
+
+html {
+    display: flex;
+    background: var(--null--background);
+    font-size: var(--typo--font-size);
+    font-family: var(--typo--font-family);
+}
+
+body {
+    border: .1rem solid black;
+    width: clamp(320px, 100%, 120ch);
+    padding: 0 1rem;
+}

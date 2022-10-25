@@ -1,9 +1,14 @@
-/** A build-time flag to determine whether HTML responses should be minified or not */
-export const MINIFY_HTML: boolean =
-	import.meta.env.VITE_MINIFY_HTML === undefined
-		? true
-		: import.meta.env.VITE_MINIFY_HTML === '1';
-export const MINIFY_CSS: boolean =
-	import.meta.env.VITE_MINIFY_CSS === undefined
-		? true
-		: import.meta.env.VITE_MINIFY_CSS === '1';
+/** variables.ts */
+
+/// Site builder
+
+/** If true, the site builder will minify the generated HTML page. */
+export const MINIFY_HTML = bool(import.meta.env.VITE_MINIFY_HTML, true);
+/** If true, the site builder will minify the generated CSS bundle. */
+export const MINIFY_CSS = bool(import.meta.env.VITE_MINIFY_CSS, true);
+
+/// Helpers
+function bool(val, fallback) {
+	if (val === undefined) return Boolean(fallback);
+	return val === '1';
+}

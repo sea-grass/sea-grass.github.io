@@ -1,0 +1,26 @@
+:root {
+  --primary--colour: green;
+  --text--colour: yellow;
+  --typo--font-size: 18px;
+  --typo--font-family: Arial;
+  
+  --null--background: #bacbac;
+  --content--background: blue;
+  
+  
+  /**
+   * webfx css typography says
+   * think about vertical rhythm.
+   * https://www.webfx.com/blog/web-design/css-typography-02/
+   */
+  /* Vertical rhythm: Line heights, margins, and padding should all be equal or within even proportion. */
+  --typo--font-size: 18px;
+  --typo--line-height: var(--typo--font-size);
+  --typo--padding-top: var(--typo--font-size);
+  --typo--padding-bottom: var(--typo--font-size);
+  --typo--margin-top: var(--typo--font-size);
+  --typo--margin-bottom: var(--typo--font-size);
+
+  --typo-base--font-size: calc(1.5 * var(--typo--font-size));
+  --typo-base--line-height: calc(1.5 * var(--typo--font-size));
+}
