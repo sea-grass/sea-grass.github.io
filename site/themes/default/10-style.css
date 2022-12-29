@@ -1,25 +1,9 @@
-[alt="banner"] {
-    height: 6.25rem;
-}
-
-:is(h1, h2, h3, h4, h5, h6, p) {
-    margin: 0;
-    padding: 0;
-}
-
 :is(ul, ol) {
     margin: 0;
 }
 
-p {
-    margin: .5em 0;
-}
-
-:is(h1, h2, h3, h4, h5, h6, p, li) {
-    line-height: 1.5;
-}
-
 img {
+    height: auto;
     max-width: 100%;
 }
 
@@ -31,19 +15,68 @@ a {
 
 
 
- p, ol, ul, blockquote, pre, code {
-    font-size: 1.5rem;
-    line-height: 1.5rem;
-    padding-bottom: 1rem;
- }
 
- h1 {
-    font-size: 2rem;
-    line-height: 0.75rem;
-    padding-bottom: 1rem;
- }
+ 
+/** headings */
+:is(h1,h2,h3,h4,h5,h6) {
+    font-size: Calc(1em + (1em / var(--heading-level)));
+    font-family: sans-serif;
+}
 
- h2 {
-    font-size: .7rem;
-    line-height: 2.14rem;
- }
+h1 {
+    --heading-level: 1;
+    font-size: clamp(1.75rem, 1.39rem + 1.79vw, 3rem);
+}
+
+h2 {
+    --heading-level: 2;
+    font-size: clamp(1.5rem, 1.29rem + 1.07vw, 2.25rem);
+}
+
+h3 {
+    --heading-level: 3;
+    font-size: clamp(1.25rem, 1.11rem + 0.71vw, 1.75rem);
+}
+
+h4 {
+    --heading-level: 4;
+    font-size: clamp(1.125rem, 1.09rem + 0.18vw, 1.25rem);
+}
+
+h5 {
+    --heading-level: 5;
+    font-size: clamp(1.125rem, 1.09rem + 0.18vw, 1.25rem);
+}
+
+h6 {
+    --heading-level: 6;
+    font-size: clamp(1.125rem, 1.09rem + 0.18vw, 1.25rem);
+}
+
+
+ 
+ 
+/** table */
+table {
+    background: var(--table--background);
+    margin: 3rem 0;
+    border: 1px solid black;
+    padding: 0 0.5rem;
+    border-collapse: collapse;
+}
+
+table thead {
+    border-bottom: 1px solid black;
+    padding-bottom: 99px;
+}
+
+/** nav */
+.partial .nav {
+  display: flex;
+  flex-direction: column;
+  margin: 0.5rem 0;
+}
+
+.partial .nav .items p {
+  margin: 0;
+}

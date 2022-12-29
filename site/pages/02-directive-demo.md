@@ -38,8 +38,20 @@ The `:crossedout[content]` directive will cross out the content ~~like this~~. I
 
 ### Latest Page
 
+:::details
+::summary[`::pagelatest[blog]`]
+::pagelatest[blog]
+:::
+
 The `::pagelatest[collection]` directive looks for all pages, sorts them by date, and injects
 the content of the most recent page in the collection.
+
+### Collection
+
+:::details
+::summary[`::collection[blog]`]
+::collection[blog]
+:::
 
 ## Container Directives
 

@@ -7,7 +7,7 @@ import type {
 import { h } from 'hastscript';
 import { u } from 'unist-builder';
 import { pages, partials, render } from '$lib/site';
-import type { Element } from 'hast';
+import logger from './logger';
 
 const errors = {
 	expectedTextNode: () => new Error('Expected text node'),
@@ -27,6 +27,11 @@ const make =
 		if (result.children.length > 0) data.hChildren = result.children;
 	};
 
+const block = async (node: ContainerDirective | LeafDirective) => {
+	const { class: classes } = node.attributes;
+	make('.' + classes)(node);
+};
+
 const directives: Directives = {
 	textDirective: {
 		bold: make('b'),
@@ -35,17 +40,14 @@ const directives: Directives = {
 	containerDirective: {
 		inlineList: make('.inline-list'),
 		details: make('details'),
-		async block(node) {
-			const { class: classes } = node.attributes;
-			const data = node.data || (node.data = {});
-			data.hProperties = { class: classes };
-		}
+		block
 	},
 	leafDirective: {
 		summary: make('summary'),
+		block,
 		async pagelatest(node: LeafDirective) {
 			const name = getLeafText(node);
-			console.log('Finding latest in collection(' + name + ')');
+			logger.info('Finding latest in collection(' + name + ')');
 			const collection = await pages.collection(name);
 			// assume collection is already sorted such that the first item is the latest
 			const page = collection?.[0];
@@ -65,7 +67,7 @@ const directives: Directives = {
 		},
 		async collection(node: LeafDirective) {
 			const name = getLeafText(node);
-			console.log('Finding collection(' + name + ')');
+			logger.info('Finding collection(' + name + ')');
 			const collection = await pages.collection(name);
 			if (collection && collection.length > 0) {
 				const results = await Promise.all(
@@ -90,7 +92,7 @@ const directives: Directives = {
 		},
 		async partial(node: LeafDirective) {
 			const id = getLeafText(node);
-			console.log('Finding partial(' + id + ')');
+			logger.info('Finding partial(' + id + ')');
 			const partial = await partials.load(id);
 			if (!partial) throw errors.partialNotFound(id);
 
