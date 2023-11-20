@@ -4,6 +4,7 @@ import cssMinifier from '$lib/css';
 import { MINIFY_CSS } from '$lib/variables';
 import errors from './errors';
 import type {
+	Page,
 	PageMap,
 	PageCollectionMap,
 	ThemeMap,

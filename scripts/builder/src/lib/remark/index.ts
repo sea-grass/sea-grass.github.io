@@ -1,7 +1,7 @@
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
-import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
+// import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import rehypeStringify from 'rehype-stringify';
 import frontmatter from 'remark-frontmatter';
 import extract from 'remark-extract-frontmatter';
@@ -13,12 +13,12 @@ import remarkDirective from 'remark-directive';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import rehypeHighlight from 'rehype-highlight';
-import stampit from 'stampit';
+// import stampit from 'stampit';
 import remarkCustomDirectives, {
 	type Directives
 } from 'remark-custom-directives';
 
-const { compose, deepProps } = stampit;
+// const { compose, deepProps } = stampit;
 
 const errors = {
 	expectedSingleTopLevelHeading(numFound: number) {
@@ -44,19 +44,19 @@ const errors = {
  * of those urls. This would reduce the speed of content parsing, but provide
  * the benefit of easy content editing and browsing.
  */
-const UNSAFE_EMPTY_CLOBBER_PREFIX = '';
+// const UNSAFE_EMPTY_CLOBBER_PREFIX = '';
 
-type Schema = Exclude<Parameters<typeof rehypeSanitize>[0], void>;
-const schema = compose<Schema>(
-	deepProps(defaultSchema),
-	deepProps<Schema>({
-		clobberPrefix: UNSAFE_EMPTY_CLOBBER_PREFIX,
-		attributes: {
-			div: ['class'],
-			ol: ['class']
-		}
-	})
-);
+// type Schema = Exclude<Parameters<typeof rehypeSanitize>[0], void>;
+// const schema = compose<Schema>(
+// 	deepProps(defaultSchema),
+// 	deepProps<Schema>({
+// 		clobberPrefix: UNSAFE_EMPTY_CLOBBER_PREFIX,
+// 		attributes: {
+// 			div: ['class'],
+// 			ol: ['class']
+// 		}
+// 	})
+// );
 
 export interface DocumentResult {
 	html: string;
