@@ -1,0 +1,112 @@
+/* reset */
+
+* {
+  box-sizing: border-box;
+  font-family: var(--font);
+  word-break: break-word;
+}
+
+* > * {
+  padding: var(--spacer-sm);
+  margin: var(--spacer-sm);
+  border: 1px solid var(--text);
+  border-radius: 1em;
+}
+
+* {
+  font-size: 1rem;
+  color: var(--text);
+}
+
+h1 {
+  font-size: 2rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+}
+
+h3 {
+  font-size: 1.25rem;
+}
+
+h4 {
+  font-size: 1.13rem;
+}
+
+h5 {
+  font-size: 1.07rem;
+}
+
+h6 {
+  font-size: 1.035rem;
+}
+
+code {
+  display: inline-block;
+  font-family: monospace;
+}
+
+pre {
+  display: flex;
+  border: none;
+}
+
+pre > code {
+  flex: 1;
+  box-shadow: var(--spacer-sm) var(--spacer-sm) 0 0 var(--brand);
+  border-radius: 0;
+  margin: 0 0 var(--spacer-lg) 0;
+}
+
+pre > code::before {
+  content: '```';
+  display: block;
+  margin-bottom: var(--spacer-sm);
+}
+
+pre > code::after {
+  content: '```';
+  display: block;
+  margin-top: var(--spacer-sm);
+}
+
+pre > :is(code, code::before, code::after) {
+  color: rgba(20,20,20,1);
+  background: #eee;
+  border: none;
+}
+
+p > code {
+  margin: 0 var(--spacer-sm);
+  padding: 0 var(--spacer-sm);
+}
+
+a {
+  text-decoration: underline;
+  border: none;
+  color: var(--brand);
+  padding: 0;
+  margin: 0;
+}
+
+blockquote {
+  border: none;
+  border-left: var(--spacer-sm) solid var(--brand);
+  background: #eee;
+}
+
+blockquote p {
+  border: none;
+  font-family: Serif;
+}
+
+body {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+img {
+  padding: var(--spacer-sm) 0;
+  margin: var(--spacer-sm) 0;
+}

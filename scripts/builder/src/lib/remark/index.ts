@@ -13,6 +13,7 @@ import remarkDirective from 'remark-directive';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import rehypeHighlight from 'rehype-highlight';
+import { type VFile } from 'vfile';
 // import stampit from 'stampit';
 import remarkCustomDirectives, {
 	type Directives
@@ -20,18 +21,21 @@ import remarkCustomDirectives, {
 
 // const { compose, deepProps } = stampit;
 
-const errors = {
-	expectedSingleTopLevelHeading(numFound: number) {
+class RemarkErrors {
+	static expectedSingleTopLevelHeading(file: VFile, numFound: number) {
 		return new Error(
-			'There should be one and only one top-level heading in the document. Found ' +
+			'errors.expectedSingleTopLevelHeading(' +
+				file +
+				') ' +
+				'There should be one and only one top-level heading in the document. Found ' +
 				numFound +
 				' top-level headings.'
 		);
-	},
-	partialContainsTopLevelHeading() {
+	}
+	static partialContainsTopLevelHeading() {
 		return new Error('Partials must not contain top-level headings.');
 	}
-};
+}
 
 /**
  * Custom heading ids by default are generated with a prefix
@@ -71,69 +75,77 @@ interface Heading {
 	value: string;
 }
 
-export function getProcessor(directives: Directives) {
-	const processor = unified()
-		.use(remarkParse)
-		.use(frontmatter)
-		.use(extract, { yaml: yaml })
-		.use(remarkGfm)
-		.use(remarkHeadings)
-		.use(remarkHeadingId)
-		.use(remarkImageAttributes)
-		.use(remarkDirective)
-		.use(remarkCustomDirectives, directives)
-		.use(remarkRehype)
-		.use(rehypeRaw)
-		.use(rehypeHighlight)
-		// Todo: Fix conflict between rehype-raw and rehype-sanitize
-		// Before I added rehype-raw, rehype-sanitize would respect
-		// the hast returned from directives.
-		// I added rehype-raw to support the `::partial` directive,
-		// which renders the html and injects it as a raw node.
-		// (There might be a better way to do that, not sure.)
-		// I'd still like to use rehype-sanitize, so I need
-		// to look into this later.
-		// Todo: Once rehype-sanitize is re-enabled, I'll also
-		// need to make changes to the schema to allow highlighting
-		// (https://github.com/rehypejs/rehype-highlight#example-sanitation)
-		// .use(rehypeSanitize, schema())
-		.use(rehypeStringify);
+class RemarkProcessor {
+	constructor(directives: Directives) {
+		this.processor = unified()
+			.use(remarkParse)
+			.use(frontmatter)
+			.use(extract, { yaml: yaml })
+			.use(remarkGfm)
+			.use(remarkHeadings)
+			.use(remarkHeadingId)
+			.use(remarkImageAttributes)
+			.use(remarkDirective)
+			.use(remarkCustomDirectives, directives)
+			.use(remarkRehype)
+			.use(rehypeRaw)
+			.use(rehypeHighlight)
+			// Todo: Fix conflict between rehype-raw and rehype-sanitize
+			// Before I added rehype-raw, rehype-sanitize would respect
+			// the hast returned from directives.
+			// I added rehype-raw to support the `::partial` directive,
+			// which renders the html and injects it as a raw node.
+			// (There might be a better way to do that, not sure.)
+			// I'd still like to use rehype-sanitize, so I need
+			// to look into this later.
+			// Todo: Once rehype-sanitize is re-enabled, I'll also
+			// need to make changes to the schema to allow highlighting
+			// (https://github.com/rehypejs/rehype-highlight#example-sanitation)
+			// .use(rehypeSanitize, schema())
+			.use(rehypeStringify);
+	}
 
-	return {
-		async process(markdown: string): Promise<DocumentResult> {
-			const result = await processor.process(markdown);
-			const titleHeading = (result.data.headings as Heading[]).filter(
-				({ depth }) => depth === 1
+	async process(markdown: string): Promise<DocumentResult> {
+		const result = await this.processor.process(markdown);
+		const titleHeading = (result.data.headings as Heading[]).filter(
+			({ depth }) => depth === 1
+		);
+		if (titleHeading.length !== 1) {
+			console.log(result);
+			throw RemarkErrors.expectedSingleTopLevelHeading(
+				result,
+				titleHeading.length
 			);
-			if (titleHeading.length !== 1) {
-				throw errors.expectedSingleTopLevelHeading(titleHeading.length);
-			}
-			// extract the title from the top level heading
-			const title = titleHeading[0].value;
-			const description = (result.data?.description as string) || '';
-
-			return {
-				html: String(result.value),
-				raw: markdown,
-				title,
-				description,
-				frontmatter: result.data
-			};
-		},
-		async processPartial(markdown: string): Promise<DocumentResult> {
-			const result = await processor.process(markdown);
-			const titleHeading = (result.data.headings as Heading[]).filter(
-				({ depth }) => depth === 1
-			);
-			if (titleHeading.length === 1) {
-				throw errors.partialContainsTopLevelHeading();
-			}
-
-			return {
-				html: String(result.value),
-				raw: markdown,
-				frontmatter: result.data
-			};
 		}
-	};
+		// extract the title from the top level heading
+		const title = titleHeading[0].value;
+		const description = (result.data?.description as string) || '';
+
+		return {
+			html: String(result.value),
+			raw: markdown,
+			title,
+			description,
+			frontmatter: result.data
+		};
+	}
+
+	async processPartial(markdown: string): Promise<DocumentResult> {
+		const result = await this.processor.process(markdown);
+		const titleHeading = (result.data.headings as Heading[]).filter(
+			({ depth }) => depth === 1
+		);
+		if (titleHeading.length === 1) {
+			throw RemarkErrors.partialContainsTopLevelHeading();
+		}
+
+		return {
+			html: String(result.value),
+			raw: markdown,
+			frontmatter: result.data
+		};
+	}
 }
+
+export const getProcessor = (directives: Directives) =>
+	new RemarkProcessor(directives);

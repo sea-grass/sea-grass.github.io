@@ -13,7 +13,8 @@ const errors = {
 	expectedTextNode: () => new Error('Expected text node'),
 	partialNotFound: (id: string) =>
 		new Error('Could not found partial(' + id + ')'),
-	parseError: () => new Error('Failed to parse frontmatter')
+	parseError: (error: z.ZodError) =>
+		new Error('Failed to parse frontmatter: ' + error.message)
 };
 
 type Directive = LeafDirective | ContainerDirective | TextDirective;
@@ -36,14 +37,19 @@ const directives: Directives = {
 	containerDirective: {
 		inlineList: make('.inline-list'),
 		details: make('details'),
-		async block(node) {
-			const { class: classes } = node.attributes;
+		async block(node: ContainerDirective) {
+			const { class: classes, style } = node.attributes;
 			const data = node.data || (node.data = {});
-			data.hProperties = { class: classes };
+			data.hProperties = { class: classes, style };
 		}
 	},
 	leafDirective: {
 		summary: make('summary'),
+		async block(node: LeafDirective) {
+			const { class: classes, style } = node.attributes;
+			const data = node.data || (node.data = {});
+			data.hProperties = { class: classes, style };
+		},
 		async pagelatest(node: LeafDirective) {
 			const name = getLeafText(node);
 			console.log('Finding latest in collection(' + name + ')');
@@ -59,8 +65,8 @@ const directives: Directives = {
 
 				const parse_result = schema.safeParse(result.frontmatter);
 
-				if (!parse_result.success) {
-					throw errors.parseError();
+				if (parse_result.success === false) {
+					throw errors.parseError(parse_result.error);
 				}
 
 				const { slug: href, title } = parse_result.data;
@@ -92,8 +98,8 @@ const directives: Directives = {
 
 						const parse_result = schema.safeParse(result.frontmatter);
 
-						if (!parse_result.success) {
-							throw errors.parseError();
+						if (parse_result.success === false) {
+							throw errors.parseError(parse_result.error);
 						}
 
 						const { slug: href, title } = parse_result.data;
@@ -119,7 +125,13 @@ const directives: Directives = {
 
 			const result = await render(partial, { partial: true });
 
-			make('.partial', [u('raw', result.html)])(node);
+			const data = node.data || (node.data = {});
+			data.hProperties = {
+				style: 'display: contents;'
+			};
+			data.hChildren = [u('raw', result.html)];
+
+			// make('.partial', [u('raw', result.html)])(node);
 		}
 	}
 };

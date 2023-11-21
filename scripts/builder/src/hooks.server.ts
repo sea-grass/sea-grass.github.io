@@ -6,7 +6,6 @@ const html = (response: Response) =>
 	response.headers.get('content-type') === 'text/html';
 
 async function postprocess(response: Response): Promise<Response> {
-
 	return response;
 	// In the current version of svelte-kit, when I return my own
 	// `Response`, kit hangs for a few seconds before delivering my

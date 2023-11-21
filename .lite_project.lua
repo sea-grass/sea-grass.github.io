@@ -9,8 +9,10 @@ local config = require "core.config"
 -- config.ignore_files = {"^%.", <some-patterns>}
 
 config.ignore_files = {
-  "^%.svelte%-kit",
-  "^node_modules"
+  "^%.svelte%-kit/",
+  "^node_modules/",
+  "^/build/",
+  "^%.git/"
 }
 
 -- Patterns are normally applied to the file's or directory's name, without

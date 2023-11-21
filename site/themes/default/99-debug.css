@@ -1,7 +1,0 @@
-.hiding {
-    opacity: 0;
-}
-
-.hiding:hover {
-    opacity: unset;
-}
