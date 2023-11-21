@@ -9,7 +9,7 @@
 * > * {
   padding: var(--spacer-sm);
   margin: var(--spacer-sm);
-  border: 1px solid var(--text);
+  /* border: 1px solid var(--text); */
   border-radius: 1em;
 }
 
