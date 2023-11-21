@@ -4,6 +4,7 @@ import cssMinifier from '$lib/css';
 import { MINIFY_CSS } from '$lib/variables';
 import errors from './errors';
 import type {
+	Page,
 	PageMap,
 	PageCollectionMap,
 	ThemeMap,
@@ -33,7 +34,7 @@ export async function readPages(
 	const loadContent = async ([
 		path,
 		load
-	]: typeof entries[number]): Promise<PageEntry> => [path, await load()];
+	]: (typeof entries)[number]): Promise<PageEntry> => [path, await load()];
 
 	const parseDocuments = (
 		entries: PageEntry[]
@@ -119,7 +120,7 @@ export async function readPartials(
 	const loadContent = async ([
 		path,
 		load
-	]: typeof entries[number]): Promise<PartialEntry> => [path, await load()];
+	]: (typeof entries)[number]): Promise<PartialEntry> => [path, await load()];
 
 	const parsePartials = (entries: PartialEntry[]): PartialMap => {
 		const partials: PartialMap = {};

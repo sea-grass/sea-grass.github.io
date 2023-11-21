@@ -6,13 +6,14 @@ import type {
 } from 'mdast-util-directive';
 import { h } from 'hastscript';
 import { u } from 'unist-builder';
+import { z } from 'zod';
 import { pages, partials, render } from '$lib/site';
-import type { Element } from 'hast';
 
 const errors = {
 	expectedTextNode: () => new Error('Expected text node'),
 	partialNotFound: (id: string) =>
-		new Error('Could not found partial(' + id + ')')
+		new Error('Could not found partial(' + id + ')'),
+	parseError: () => new Error('Failed to parse frontmatter')
 };
 
 type Directive = LeafDirective | ContainerDirective | TextDirective;
@@ -51,8 +52,18 @@ const directives: Directives = {
 			const page = collection?.[0];
 			if (page) {
 				const result = await render(page);
-				const href = (result.frontmatter as any).slug as string;
-				const title = result.title;
+				const schema = z.object({
+					slug: z.string(),
+					title: z.string()
+				});
+
+				const parse_result = schema.safeParse(result.frontmatter);
+
+				if (!parse_result.success) {
+					throw errors.parseError();
+				}
+
+				const { slug: href, title } = parse_result.data;
 
 				make('.pagelatest', [h('a', { href }, title)])(node);
 			} else {
@@ -73,10 +84,22 @@ const directives: Directives = {
 				);
 
 				const items = results
-					.map((result) => ({
-						href: (result.frontmatter as any).slug as string,
-						title: result.title
-					}))
+					.map((result) => {
+						const schema = z.object({
+							slug: z.string(),
+							title: z.string()
+						});
+
+						const parse_result = schema.safeParse(result.frontmatter);
+
+						if (!parse_result.success) {
+							throw errors.parseError();
+						}
+
+						const { slug: href, title } = parse_result.data;
+
+						return { title, href };
+					})
 					.map(({ href, title }) => h('li', h('a', { href }, title)));
 
 				make('ol.collection', items)(node);

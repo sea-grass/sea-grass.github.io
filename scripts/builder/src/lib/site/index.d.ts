@@ -1,13 +1,13 @@
 export type Page = {
 	path: string;
-	frontmatter: any;
+	frontmatter: object;
 	document: string;
 	collection?: string;
 };
 
 export type Partial = {
 	path: string;
-	frontmatter: any;
+	frontmatter: object;
 	document: string;
 };
 
