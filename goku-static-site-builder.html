@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<title>Goku, a static site generator</title><!-- HEAD_svelte-xmhwp8_START --><meta name="description" content=""><style>:root{--spacer-sm:.5rem;--spacer-md:1rem;--spacer-lg:2rem;--text:#000;--font:sans-serif;--brand:#228b22;font-size:16px}*{box-sizing:border-box;font-family:var(--font);word-break:break-word}*>*{border:1px solid var(--text);border-radius:1em;margin:var(--spacer-sm);padding:var(--spacer-sm)}*{color:var(--text);font-size:1rem}h1{font-size:2rem}h2{font-size:1.5rem}h3{font-size:1.25rem}h4{font-size:1.13rem}h5{font-size:1.07rem}h6{font-size:1.035rem}code{display:inline-block;font-family:monospace}pre{border:none;display:flex}pre>code{border-radius:0;box-shadow:var(--spacer-sm) var(--spacer-sm) 0 0 var(--brand);flex:1;margin:0 0 var(--spacer-lg) 0}pre>code:before{content:"```";display:block;margin-bottom:var(--spacer-sm)}pre>code:after{content:"```";display:block;margin-top:var(--spacer-sm)}pre>:is(code,code:before,code:after){background:#eee;border:none;color:#141414}p>code{margin:0 var(--spacer-sm);padding:0 var(--spacer-sm)}a{border:none;color:var(--brand);margin:0;padding:0;text-decoration:underline}blockquote{background:#eee;border:none;border-left:var(--spacer-sm) solid var(--brand)}blockquote p{border:none;font-family:Serif}body{margin:0 auto;max-width:960px}img{margin:var(--spacer-sm) 0;padding:var(--spacer-sm) 0}.inline-list,.inline-list p:first-of-type{display:inline-block}.inline-list p:first-of-type:after{content:"";display:inline-block;width:1ch}.inline-list :is(ul,ol){display:inline-flex;flex-wrap:wrap;list-style:none;padding:0}.inline-list :is(ul,ol)>li:not(:last-of-type){margin-right:1ch}.inline-list :is(ul,ol)>li:not(:last-of-type):after{content:", "}</style><!-- HEAD_svelte-xmhwp8_END --><!-- HEAD_svelte-t0lzoy_START --><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/highlightjs/styles/rainbow.min.css"><link rel="icon" type="image/png" href="/favicon.png"><!-- HEAD_svelte-t0lzoy_END -->
+	</head>
+	<body>
+		  <!-- HTML_TAG_START --><div style="display: contents;"><p><img src="/banner.webp" alt="banner" height="101" style="float: right; border-radius: 2rem 2rem 0 2rem;"></p>
+<div style="display: flex; flex-direction: row; gap: 1rem;"><div style="display: contents;"><a href="/">home</a></div><div style="display: contents;"><a href="/blog">blog</a></div></div></div>
+<h1>Goku, a static site generator</h1>
+<blockquote>
+<p>Warning: Under construction.</p>
+<p>This webpage is considered a work-in-progress and therefore may not have accurate information.</p>
+</blockquote>
+<p>Goku is a Static Site Generator (SSG).
+You write your website content in markdown and it generates a static site for you, ready to deploy anywhere.
+It has support for partials, collections, and data-based routing.
+It's extensible through css themes, web components, and markdown directives.</p>
+<h2>Technical Implementation</h2>
+<p>Goku uses svelte-kit's <code>adapter-static</code> to generate a build directory with all site pages and assets.
+Site pages are stored as markdown and are parsed by <code>remark</code>. Markdown files are discovered and passed to svelte-kit for processing by <code>vite</code>'s glob imports.</p>
+<pre><code>(site files) ->
+vite glob imports ->
+(svelte-kit site) ->
+svelte-kit build ->
+(remark pipeline) ->
+remark process site content ->
+(build dir)
+</code></pre>
+<p>For templating, Goku makes use of Markdown's custom directives to support page/content/collection lookups and partials.</p>
+<h2>Getting Started</h2>
+<h3>Quickstart</h3>
+<p>Goku 0.1 makes use of svelte-kit, vite, and remark to generate a static site. As long as you have at least Node 20.x installed, you should be good.</p>
+<p>Not many Svelte features are used, so this may change later. It is useful for a live-reload dev experience though.
+Vite is used for its glob import support, but that'll only be useful as the builder is colocated in the same git repo as the site content, so that'll likely change later.
+Remark is used to process the markdown content, so that'll likely be the most stable aspect of the project as we gear up for 1.0.</p>
+<p>Right now, the builder is tightly coupled with the site content. You'll have to clone the repo and replace the site content with your own.</p>
+<p>To get started:</p>
+<pre><code>cd scripts/builder
+npm install
+</code></pre>
+<p>To run the dev server:</p>
+<pre><code>cd scripts/builder
+npm run dev
+</code></pre>
+<h2>Build</h2>
+<pre><code>cd scripts/builder
+npm run build
+</code></pre>
+<h2>Content</h2>
+<h3>Pages</h3>
+<p>Pages match the glob <code>site/pages/**/*.md</code>. Each page contains frontmatter with a mandatory <code>slug</code> field, for routing.</p><!-- HTML_TAG_END -->   
+	</body>
+</html>
