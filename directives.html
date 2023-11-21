@@ -1,1 +1,39 @@
-<!doctypehtml><html lang=en><meta content http-equiv=content-security-policy><title>Directives</title><meta content name=description><style>:root{--primary--colour:green;--text--colour:#ff0;--typo--font-family:Arial;--null--background:#bacbac;--content--background:blue;--typo--font-size:18px;--typo--line-height:var(--typo--font-size);--typo--padding-top:var(--typo--font-size);--typo--padding-bottom:var(--typo--font-size);--typo--margin-top:var(--typo--font-size);--typo--margin-bottom:var(--typo--font-size);--typo-base--font-size:calc(var(--typo--font-size)*1.5);--typo-base--line-height:calc(var(--typo--font-size)*1.5)}*{box-sizing:border-box}html{background:var(--null--background);display:flex;font-family:var(--typo--font-family);font-size:var(--typo--font-size)}body{border:.1rem solid #000;padding:0 1rem;width:clamp(320px,100%,120ch)}[alt=banner]{height:6.25rem}:is(h1,h2,h3,h4,h5,h6,p){margin:0;padding:0}:is(ul,ol){margin:0}p{margin:.5em 0}:is(h1,h2,h3,h4,h5,h6,p,li){line-height:1.5}img{max-width:100%}a{color:var(--primary--colour);text-decoration:underline;text-decoration-color:var(--null--background)}blockquote,code,ol,p,pre,ul{font-size:1.5rem;line-height:1.5rem;padding-bottom:1rem}h1{font-size:2rem;line-height:.75rem;padding-bottom:1rem}h2{font-size:.7rem;line-height:2.14rem}.hiding{opacity:0}.hiding:hover{opacity:unset}.inline-list,.inline-list p:first-of-type{display:inline-block}.inline-list p:first-of-type:after{content:"";display:inline-block;width:1ch}.inline-list :is(ul,ol){display:inline-flex;flex-wrap:wrap;list-style:none;padding:0}.inline-list :is(ul,ol)>li:not(:last-of-type){margin-right:1ch}.inline-list :is(ul,ol)>li:not(:last-of-type):after{content:", "}</style><meta charset=utf8><meta content="width=device-width,initial-scale=1"name=viewport><meta content="width=device-width,initial-scale=1"name=viewport><link href=/highlightjs/styles/rainbow.min.css rel=stylesheet><link href=/favicon.png rel=icon type=image/png><div id=svelte><div class=partial><p><a href=/>home</a><p><img alt=banner height=100 src=/banner.webp></div><h1>Directives</h1><p>Markdown <a href=https://talk.commonmark.org/t/generic-directives-plugins-syntax/444>generic directives</a> are a proposed syntax to extend markdown with custom features/plugins while still remaining fairly human readable.<p>This page demos the directives I've added to this site's markdown processor (based on <a href=https://github.com/remarkjs/remark>remark</a>).<p>There are three kinds of directives: text, leaf, and container.<h2>Text Directives</h2><p>Text directives start with a single colon (<code>:</code>).<h3>Bold</h3><details><summary><code>:bold[bolded]</code></summary><p><b>bolded</b></details><p>In markdown, you can wrap content with two asterisks to <strong>bold</strong> it. This directive reproduces this behaviour. This text will be <b>bolded</b>! This directive is an example of how directives can be created and shouldn't be used in actual markdown documents.<h3>Crossed out</h3><details><summary><code>:crossedout[This is cool!]</code></summary><p><del>This is cool!</del></details><p>The <code>:crossedout[content]</code> directive will cross out the content <del>like this</del>. It's another example directive that mirrors the functionality of markdown's own syntax.<h2>Leaf Directives</h2><h3>Latest Page</h3><p>The <code>::pagelatest[collection]</code> directive looks for all pages, sorts them by date, and injects the content of the most recent page in the collection.<h2>Container Directives</h2><h3>Inline List</h3><p>The <code>:::inlineList</code> directive renders a markdown list inline by wrapping it in a container div.<ul><li>Regular markdown lists<li>Appear in list form<li>Like this</ul><div class=inline-list><ul><li>Inline lists<li>Are still semantically lists<li>but appear inline</ul></div></div>
+<!doctype html>
+<html lang="en">
+	<head>
+		<title>Directives</title><!-- HEAD_svelte-xmhwp8_START --><meta name="description" content=""><style>:root{--primary--colour:green;--text--colour:#ff0;--typo--font-family:Arial;--null--background:#bacbac;--content--background:blue;--typo--font-size:18px;--typo--line-height:var(--typo--font-size);--typo--padding-top:var(--typo--font-size);--typo--padding-bottom:var(--typo--font-size);--typo--margin-top:var(--typo--font-size);--typo--margin-bottom:var(--typo--font-size);--typo-base--font-size:calc(var(--typo--font-size)*1.5);--typo-base--line-height:calc(var(--typo--font-size)*1.5)}*{box-sizing:border-box}html{background:var(--null--background);display:flex;font-family:var(--typo--font-family);font-size:var(--typo--font-size)}body{border:.1rem solid #000;padding:0 1rem;width:clamp(320px,100%,120ch)}[alt=banner]{height:6.25rem}:is(h1,h2,h3,h4,h5,h6,p){margin:0;padding:0}:is(ul,ol){margin:0}p{margin:.5em 0}:is(h1,h2,h3,h4,h5,h6,p,li){line-height:1.5}img{max-width:100%}a{color:var(--primary--colour);text-decoration:underline;text-decoration-color:var(--null--background)}blockquote,code,ol,p,pre,ul{font-size:1.5rem;line-height:1.5rem;padding-bottom:1rem}h1{font-size:2rem;line-height:.75rem;padding-bottom:1rem}h2{font-size:.7rem;line-height:2.14rem}.hiding{opacity:0}.hiding:hover{opacity:unset}.inline-list,.inline-list p:first-of-type{display:inline-block}.inline-list p:first-of-type:after{content:"";display:inline-block;width:1ch}.inline-list :is(ul,ol){display:inline-flex;flex-wrap:wrap;list-style:none;padding:0}.inline-list :is(ul,ol)>li:not(:last-of-type){margin-right:1ch}.inline-list :is(ul,ol)>li:not(:last-of-type):after{content:", "}</style><!-- HEAD_svelte-xmhwp8_END --><!-- HEAD_svelte-t0lzoy_START --><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/highlightjs/styles/rainbow.min.css"><link rel="icon" type="image/png" href="/favicon.png"><!-- HEAD_svelte-t0lzoy_END -->
+	</head>
+	<body>
+		<div id="svelte">  <!-- HTML_TAG_START --><div class="partial"><p><a href="/">home</a></p>
+<p><img src="/banner.webp" alt="banner" height="100"></p></div>
+<h1>Directives</h1>
+<p>Markdown <a href="https://talk.commonmark.org/t/generic-directives-plugins-syntax/444">generic directives</a> are a proposed syntax to extend markdown with custom features/plugins while still remaining fairly human readable.</p>
+<p>This page demos the directives I've added to this site's markdown processor (based on <a href="https://github.com/remarkjs/remark">remark</a>).</p>
+<p>There are three kinds of directives: text, leaf, and container.</p>
+<h2>Text Directives</h2>
+<p>Text directives start with a single colon (<code>:</code>).</p>
+<h3>Bold</h3>
+<details><summary><code>:bold[bolded]</code></summary><p><b>bolded</b></p></details>
+<p>In markdown, you can wrap content with two asterisks to <strong>bold</strong> it. This directive reproduces this behaviour. This text will be <b>bolded</b>! This directive is an example of how directives can be created and shouldn't be used in actual markdown documents.</p>
+<h3>Crossed out</h3>
+<details><summary><code>:crossedout[This is cool!]</code></summary><p><del>This is cool!</del></p></details>
+<p>The <code>:crossedout[content]</code> directive will cross out the content <del>like this</del>. It's another example directive that mirrors the functionality of markdown's own syntax.</p>
+<h2>Leaf Directives</h2>
+<h3>Latest Page</h3>
+<p>The <code>::pagelatest[collection]</code> directive looks for all pages, sorts them by date, and injects
+the content of the most recent page in the collection.</p>
+<h2>Container Directives</h2>
+<h3>Inline List</h3>
+<p>The <code>:::inlineList</code> directive renders a markdown list inline by wrapping it in a container div.</p>
+<ul>
+<li>Regular markdown lists</li>
+<li>Appear in list form</li>
+<li>Like this</li>
+</ul>
+<div class="inline-list"><ul>
+<li>Inline lists</li>
+<li>Are still semantically lists</li>
+<li>but appear inline</li>
+</ul></div><!-- HTML_TAG_END -->   </div>
+	</body>
+</html>
