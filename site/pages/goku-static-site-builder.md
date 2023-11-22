@@ -48,21 +48,21 @@ Right now, the builder is tightly coupled with the site content. You'll have to 
 
 To get started:
 
-```
+```sh
 cd scripts/builder
 npm install
 ```
 
 To run the dev server:
 
-```
+```sh
 cd scripts/builder
 npm run dev
 ```
 
 ## Build
 
-```
+```sh
 cd scripts/builder
 npm run build
 ```

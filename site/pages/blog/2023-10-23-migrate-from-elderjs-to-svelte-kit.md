@@ -2,6 +2,7 @@
 slug: /blog/migrate-from-elderjs-to-svelte-kit
 collection: blog
 date: 2023-10-24
+title: Site builder migration
 ---
 
 ::partial[nav]

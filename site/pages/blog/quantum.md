@@ -1,6 +1,7 @@
 ---
 slug: /blog/what-is-quantum-programming-really
 collection: blog
+title: Quantum Programming
 ---
 
 ::partial[nav]

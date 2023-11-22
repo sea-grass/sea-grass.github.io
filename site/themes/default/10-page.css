@@ -1,20 +1,6 @@
-* {
-    box-sizing: border-box;
-}
-
-html {
-    display: flex;
-    background: var(--content--background);
-    font-size: var(--typo--font-size);
-    font-family: var(--typo--font-family);
-}
-
 body {
-    background: var(--null--background);
-    border: .1rem solid black;
     min-width: 320px;
     width: 100%;
-    max-width: 120ch;
+    max-width: 80ch;
     padding: 0 1rem;
-    clamp(1rem, 0.96rem + 0.18vw, 1.125rem);
 }

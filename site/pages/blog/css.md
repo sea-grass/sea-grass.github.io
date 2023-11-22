@@ -2,6 +2,7 @@
 slug: /blog/css-nice-custom-link-styles
 collection: blog
 description: What goes into styling HTML links?
+title: CSS Links
 ---
 
 ::partial[nav]
