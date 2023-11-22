@@ -6,13 +6,16 @@ import type {
 } from 'mdast-util-directive';
 import { h } from 'hastscript';
 import { u } from 'unist-builder';
+import { z } from 'zod';
 import { pages, partials, render } from '$lib/site';
 import logger from './logger';
 
 const errors = {
 	expectedTextNode: () => new Error('Expected text node'),
 	partialNotFound: (id: string) =>
-		new Error('Could not found partial(' + id + ')')
+		new Error('Could not found partial(' + id + ')'),
+	parseError: (error: z.ZodError) =>
+		new Error('Failed to parse frontmatter: ' + error.message)
 };
 
 type Directive = LeafDirective | ContainerDirective | TextDirective;
@@ -28,8 +31,9 @@ const make =
 	};
 
 const block = async (node: ContainerDirective | LeafDirective) => {
-	const { class: classes, ...attrs } = node.attributes;
-	make('.' + classes, attrs)(node);
+	const { class: classes, style } = node.attributes;
+	const data = node.data || (node.data = {});
+	data.hProperties = { class: classes, style };
 };
 
 const directives: Directives = {
@@ -53,8 +57,18 @@ const directives: Directives = {
 			const page = collection?.[0];
 			if (page) {
 				const result = await render(page);
-				const href = (result.frontmatter as any).slug as string;
-				const title = result.title;
+				const schema = z.object({
+					slug: z.string(),
+					title: z.string()
+				});
+
+				const parse_result = schema.safeParse(result.frontmatter);
+
+				if (parse_result.success === false) {
+					throw errors.parseError(parse_result.error);
+				}
+
+				const { slug: href, title } = parse_result.data;
 
 				make('.pagelatest', [h('a', { href }, title)])(node);
 			} else {
@@ -75,10 +89,22 @@ const directives: Directives = {
 				);
 
 				const items = results
-					.map((result) => ({
-						href: (result.frontmatter as any).slug as string,
-						title: result.title
-					}))
+					.map((result) => {
+						const schema = z.object({
+							slug: z.string(),
+							title: z.string()
+						});
+
+						const parse_result = schema.safeParse(result.frontmatter);
+
+						if (parse_result.success === false) {
+							throw errors.parseError(parse_result.error);
+						}
+
+						const { slug: href, title } = parse_result.data;
+
+						return { title, href };
+					})
 					.map(({ href, title }) => h('li', h('a', { href }, title)));
 
 				make('ol.collection', items)(node);
@@ -98,7 +124,13 @@ const directives: Directives = {
 
 			const result = await render(partial, { partial: true });
 
-			make('.partial', [u('raw', result.html)])(node);
+			const data = node.data || (node.data = {});
+			data.hProperties = {
+				style: 'display: contents;'
+			};
+			data.hChildren = [u('raw', result.html)];
+
+			// make('.partial', [u('raw', result.html)])(node);
 		}
 	}
 };

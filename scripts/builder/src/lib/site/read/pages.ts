@@ -15,7 +15,7 @@ export async function readPages(
 	const loadContent = async ([
 		path,
 		load
-	]: typeof entries[number]): Promise<PageEntry> => [path, await load()];
+	]: (typeof entries)[number]): Promise<PageEntry> => [path, await load()];
 
 	const parseDocuments = (
 		entries: PageEntry[]

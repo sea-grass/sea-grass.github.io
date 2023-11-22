@@ -1,28 +1,11 @@
-html {
-  --primary--colour: #0a1d4e;
-  --text--colour: yellow;
-  --typo--font-size: 18px;
-  --typo--font-family: serif;
-  
-  --null--background: #e2e2e2;
-  --content--background: #686899;
-  
-  --table--background: white;
-  
-  
-  /**
-   * webfx css typography says
-   * think about vertical rhythm.
-   * https://www.webfx.com/blog/web-design/css-typography-02/
-   */
-  /* Vertical rhythm: Line heights, margins, and padding should all be equal or within even proportion. */
-  --typo--font-size: 18px;
-  --typo--line-height: var(--typo--font-size);
-  --typo--padding-top: var(--typo--font-size);
-  --typo--padding-bottom: var(--typo--font-size);
-  --typo--margin-top: var(--typo--font-size);
-  --typo--margin-bottom: var(--typo--font-size);
+:root {
+  --spacer-sm: .5rem;
+  --spacer-md: 1rem;
+  --spacer-lg: 2rem;
 
-  --typo-base--font-size: calc(1.5 * var(--typo--font-size));
-  --typo-base--line-height: calc(1.5 * var(--typo--font-size));
+  --text: black;
+  --font: sans-serif;
+  --brand: forestgreen;
+
+  font-size: 16px;
 }
