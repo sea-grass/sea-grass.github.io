@@ -1,21 +1,31 @@
 ---
 slug: /
+description: The blog of Chris Grass, a software developer interested in all things.
 ---
 
 ::partial[nav]
 
-# Chris Grass
+::::block{class="section"}
+# Home page
 
-I'm currently a freelance software developer based in Toronto, Canada.
+Welcome to the homepage of Christopher Grass, a software developer based in Toronto, Canada. I like to chat about programming languages, systems design, video games, and music. Sometimes I write about these things in my blog, too.
 
-:::inlineList[Previously:]
-- LootLARP
-- CommerceBear
-- Kobo
-- Palomino Inc.
+Check out my:
+
+:::inlineList
+- [Blog](#blog)
+- [Projects](#projects)
 :::
+::::
 
-## Projects
+::::block{class="section"}
+## [Blog](/blog) {#blog}
+
+::collection[blog]
+::::
+
+::::block{class="section"}
+## Projects {#projects}
 
 Some projects I'm currently working on:
 
@@ -23,6 +33,7 @@ Some projects I'm currently working on:
 - [Bookmarklet repository](https://github.com/sea-grass/bookmarklet-repository)
 - [Generative skyline](https://skyline.ceagrass.workers.dev/image-viewer)
 - [Cel.js](https://github.com/sea-grass/cel.js)
+::::
 
 ## Websites
 

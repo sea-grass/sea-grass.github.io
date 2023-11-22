@@ -28,8 +28,8 @@ const make =
 	};
 
 const block = async (node: ContainerDirective | LeafDirective) => {
-	const { class: classes } = node.attributes;
-	make('.' + classes)(node);
+	const { class: classes, ...attrs } = node.attributes;
+	make('.' + classes, attrs)(node);
 };
 
 const directives: Directives = {
@@ -67,7 +67,7 @@ const directives: Directives = {
 		},
 		async collection(node: LeafDirective) {
 			const name = getLeafText(node);
-			logger.info('Finding collection(' + name + ')');
+			logger.debug('Finding collection(' + name + ')');
 			const collection = await pages.collection(name);
 			if (collection && collection.length > 0) {
 				const results = await Promise.all(
@@ -92,7 +92,7 @@ const directives: Directives = {
 		},
 		async partial(node: LeafDirective) {
 			const id = getLeafText(node);
-			logger.info('Finding partial(' + id + ')');
+			logger.debug('Finding partial(' + id + ')');
 			const partial = await partials.load(id);
 			if (!partial) throw errors.partialNotFound(id);
 

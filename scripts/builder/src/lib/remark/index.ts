@@ -58,13 +58,21 @@ const errors = {
 // 	})
 // );
 
-export interface DocumentResult {
-	html: string;
-	title?: string;
-	description?: string;
-	frontmatter: object;
-	raw: string;
-}
+export type DocumentResult =
+	| {
+			type: 'partial';
+			html: string;
+			frontmatter: object;
+			raw: string;
+	  }
+	| {
+			type: 'page';
+			html: string;
+			frontmatter: object;
+			raw: string;
+			title: string;
+			description: string;
+	  };
 
 interface Heading {
 	depth: number;
@@ -113,6 +121,7 @@ export function getProcessor(directives: Directives) {
 			const description = (result.data?.description as string) || '';
 
 			return {
+				type: 'page',
 				html: String(result.value),
 				raw: markdown,
 				title,
@@ -130,6 +139,7 @@ export function getProcessor(directives: Directives) {
 			}
 
 			return {
+				type: 'partial',
 				html: String(result.value),
 				raw: markdown,
 				frontmatter: result.data

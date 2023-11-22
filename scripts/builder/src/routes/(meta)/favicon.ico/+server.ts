@@ -1,6 +1,8 @@
-import { error } from '@sveltejs/kit';
+export const prerender = true;
+
+export const entries = () => [''];
 
 export async function GET() {
 	// TODO: favicon.ico
-	throw error(404);
+	return new Response('');
 }

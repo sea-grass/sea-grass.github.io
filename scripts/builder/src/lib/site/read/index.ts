@@ -10,6 +10,7 @@ import { parseFrontmatter } from './parseFrontmatter';
 const parseThemeName = (fileName: string) => {
 	// I know that the themes directory is the 4th token,
 	// so the theme name will be the 5th token
+	logger.info('Theme name: ' + fileName);
 	return fileName.split('/').slice(4, 5)[0];
 };
 
@@ -18,7 +19,6 @@ async function getCssFiles(
 ): Promise<{ theme: string; css: string }[]> {
 	const cssFiles: { theme: string; css: string }[] = [];
 	for (const [path, load] of Object.entries(themes)) {
-		console.debug(path, 'sup');
 		const theme = parseThemeName(path);
 		const css = await load();
 		cssFiles.push({ theme, css });
@@ -30,6 +30,7 @@ async function reduceToThemeMap(
 	themeFiles: { theme: string; css: string }[]
 ): Promise<ThemeMap> {
 	return themeFiles.reduce<ThemeMap>((themeMap, { theme, css }) => {
+		// logger.info('Adding to ' + theme, css);
 		if (themeMap[theme]) themeMap[theme] += css;
 		else themeMap[theme] = css;
 		return themeMap;

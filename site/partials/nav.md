@@ -2,6 +2,13 @@
 id: nav
 ---
 
-[home](/)
+::::block{class="nav"}
+:::block{class="items"}
 
-![banner](/banner.webp){height=100}
+[christophergrass.com](/)
+|
+[blog](/blog)
+
+:::
+::::
+::block[![banner](/banner.webp){height=100}]{class="banner"}

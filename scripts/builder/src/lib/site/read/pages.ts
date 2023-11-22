@@ -3,6 +3,9 @@ import errors from '../errors';
 import type { PageMap, PageCollectionMap, Page } from '../../site/index.d';
 import { parseFrontmatter } from './parseFrontmatter';
 
+/**
+ * Each collection will be sorted based on its date.
+ */
 export async function readPages(
 	pages: Record<string, () => Promise<string>>
 ): Promise<{ slugs: PageMap; collections: PageCollectionMap }> {
@@ -50,10 +53,21 @@ export async function readPages(
 			slugs[slug] = page;
 		}
 
+		for (const name of Object.keys(collections)) {
+			console.log(
+				typeof collections[name],
+				Object.keys(collections[name]),
+				Array.isArray(collections[name])
+			);
+			collections[name].sort((a, b) => {
+				const date = (page: Page) =>
+					new Date(page.frontmatter?.date).getTime() / 1000 ?? 0;
+				return date(b) - date(a);
+			});
+		}
+
 		return { slugs, collections };
 	};
 
 	return await Promise.all(entries.map(loadContent)).then(parseDocuments);
-
-	return await getPageFiles(pages).then(reduceToPageMap);
 }
