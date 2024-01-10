@@ -1,9 +1,10 @@
 ---
 slug: /blog
+title: Blog
 ---
 
 ::partial[nav]
 
 # Blog
 
-::pagelatest[blog]
+::collection[blog]

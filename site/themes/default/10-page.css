@@ -1,0 +1,6 @@
+body {
+    min-width: 320px;
+    width: 100%;
+    max-width: 80ch;
+    padding: 0 1rem;
+}

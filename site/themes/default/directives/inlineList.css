@@ -1,5 +1,12 @@
 .inline-list {
-    display: inline-block;
+    display: block;
+    margin-top: var(--typo--font-size);
+    margin-bottom: var(--typo--font-size);
+}
+
+.inline-list p {
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 .inline-list p:first-of-type {
@@ -25,4 +32,5 @@
 
 .inline-list :is(ul, ol) > li:not(:last-of-type)::after {
     content: ', ';
+    padding-left: 0.001ch;
 }

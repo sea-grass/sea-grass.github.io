@@ -10,5 +10,5 @@ export const MINIFY_CSS = bool(import.meta.env.VITE_MINIFY_CSS, true);
 /// Helpers
 function bool(val: unknown, fallback: boolean) {
 	if (val === undefined) return Boolean(fallback);
-	return val === '1';
+	return val === '1' || val === 'yes';
 }

@@ -13,7 +13,7 @@ import remarkDirective from 'remark-directive';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import rehypeHighlight from 'rehype-highlight';
-import { type VFile } from 'vfile';
+import type { VFile } from 'vfile';
 // import stampit from 'stampit';
 import remarkCustomDirectives, {
 	type Directives
@@ -62,47 +62,60 @@ class RemarkErrors {
 // 	})
 // );
 
-export interface DocumentResult {
-	html: string;
-	title?: string;
-	description?: string;
-	frontmatter: object;
-	raw: string;
-}
+export type DocumentResult =
+	| {
+			type: 'partial';
+			html: string;
+			frontmatter: object;
+			raw: string;
+	  }
+	| {
+			type: 'page';
+			html: string;
+			frontmatter: object;
+			raw: string;
+			title: string;
+			description: string;
+	  };
 
 interface Heading {
 	depth: number;
 	value: string;
 }
 
+const p = (directives: Directives) =>
+	unified()
+		.use(remarkParse)
+		.use(frontmatter)
+		.use(extract, { yaml: yaml })
+		.use(remarkGfm)
+		.use(remarkHeadings)
+		.use(remarkHeadingId)
+		.use(remarkImageAttributes)
+		.use(remarkDirective)
+		.use(remarkCustomDirectives, directives)
+		.use(remarkRehype)
+		.use(rehypeRaw)
+		.use(rehypeHighlight)
+		// Todo: Fix conflict between rehype-raw and rehype-sanitize
+		// Before I added rehype-raw, rehype-sanitize would respect
+		// the hast returned from directives.
+		// I added rehype-raw to support the `::partial` directive,
+		// which renders the html and injects it as a raw node.
+		// (There might be a better way to do that, not sure.)
+		// I'd still like to use rehype-sanitize, so I need
+		// to look into this later.
+		// Todo: Once rehype-sanitize is re-enabled, I'll also
+		// need to make changes to the schema to allow highlighting
+		// (https://github.com/rehypejs/rehype-highlight#example-sanitation)
+		// .use(rehypeSanitize, schema())
+		.use(rehypeStringify);
+
 class RemarkProcessor {
+	processor: ReturnType<typeof p>;
+
 	constructor(directives: Directives) {
-		this.processor = unified()
-			.use(remarkParse)
-			.use(frontmatter)
-			.use(extract, { yaml: yaml })
-			.use(remarkGfm)
-			.use(remarkHeadings)
-			.use(remarkHeadingId)
-			.use(remarkImageAttributes)
-			.use(remarkDirective)
-			.use(remarkCustomDirectives, directives)
-			.use(remarkRehype)
-			.use(rehypeRaw)
-			.use(rehypeHighlight)
-			// Todo: Fix conflict between rehype-raw and rehype-sanitize
-			// Before I added rehype-raw, rehype-sanitize would respect
-			// the hast returned from directives.
-			// I added rehype-raw to support the `::partial` directive,
-			// which renders the html and injects it as a raw node.
-			// (There might be a better way to do that, not sure.)
-			// I'd still like to use rehype-sanitize, so I need
-			// to look into this later.
-			// Todo: Once rehype-sanitize is re-enabled, I'll also
-			// need to make changes to the schema to allow highlighting
-			// (https://github.com/rehypejs/rehype-highlight#example-sanitation)
-			// .use(rehypeSanitize, schema())
-			.use(rehypeStringify);
+		this.processor = p(directives);
 	}
 
 	async process(markdown: string): Promise<DocumentResult> {
@@ -122,6 +135,7 @@ class RemarkProcessor {
 		const description = (result.data?.description as string) || '';
 
 		return {
+			type: 'page',
 			html: String(result.value),
 			raw: markdown,
 			title,
@@ -140,6 +154,7 @@ class RemarkProcessor {
 		}
 
 		return {
+			type: 'partial',
 			html: String(result.value),
 			raw: markdown,
 			frontmatter: result.data

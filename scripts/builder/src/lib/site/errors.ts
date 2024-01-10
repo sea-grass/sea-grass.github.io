@@ -21,6 +21,11 @@ const errors = {
 		duplicateIdFound(id: string) {
 			return new Error('Duplicate id found: [' + id + ']');
 		}
+	},
+	render: {
+		missingDocument() {
+			return new Error('Cannot render without a document');
+		}
 	}
 };
 

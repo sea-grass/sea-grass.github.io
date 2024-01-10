@@ -2,6 +2,7 @@ import { getProcessor, type DocumentResult } from '$lib/remark';
 import directives from './directives';
 import { readPages, readThemes, readPartials } from './read';
 import type { Page, Partial } from './index.d';
+import errors from './errors';
 
 const files = {
 	pages: import.meta.glob('$site/pages/**/*.md', { as: 'raw' }),
@@ -50,6 +51,8 @@ export async function render(
 	document: Page | Partial,
 	options?: { partial: boolean }
 ): Promise<DocumentResult> {
+	if (!document) throw errors.render.missingDocument();
+
 	if (options?.partial)
 		return await processor.processPartial(document.document);
 	else return await processor.process(document.document);

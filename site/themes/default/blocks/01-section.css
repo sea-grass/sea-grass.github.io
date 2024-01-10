@@ -1,0 +1,13 @@
+.section {
+    height: 50vh;
+    margin: 1rem 0;
+    padding: 1rem;
+}
+
+.section {
+    border-top: none;
+}
+
+.section ~ .section {
+    border-top: 1px solid black;
+}
