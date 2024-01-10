@@ -1,0 +1,1 @@
+pub const entrypoint = "./javascript/intro.wiki!!!";
