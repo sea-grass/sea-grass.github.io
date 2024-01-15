@@ -1,0 +1,5 @@
+= Resources =
+
+== Books ==
+
+JavaScript, The Good Parts

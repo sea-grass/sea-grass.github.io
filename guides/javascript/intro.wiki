@@ -1,1 +1,11 @@
-Hello, world!
+= Introduction =
+
+If you're here, you're interested in reading about JavaScript. Enjoy your stay. Hope you learn something new.
+
+Treat this as a sort of meandering journey through the world of JavaScript. Engage with the topics you find interesting. Find a new way to think about a problem or further your understanding.
+
+Each article is tagged to improve discoverability. See [[Tags]] for a list of all tags used.
+
+See [[Resources]] if you want to know the places I turn to when I want to read more about this topic.
+
+---
