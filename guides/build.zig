@@ -8,14 +8,8 @@ pub fn build(b: *std.Build) void {
     const js_guide = b.step("js-guide", "Build the JS guide.");
 
     const write_files = b.addWriteFiles();
-    _ = write_files.add(
-        "index.html",
-        "<!doctype html><html><head><script src=\"bootstrap.js\" defer></script></head><body><p>Hello, world!</p></body></html>",
-    );
-    _ = write_files.add(
-        "bootstrap.js",
-        "WebAssembly.instantiateStreaming(fetch(\"app.wasm\"), {env:{print(num) {  console.log('env.print', num); },  },imports:{print: (num) => { console.log(num); }}}).then((obj) => { console.log(obj.instance.exports); });",
-    );
+    _ = write_files.add("index.html", @embedFile("javascript/index.html"));
+    _ = write_files.add("bootstrap.js", @embedFile("javascript/bootstrap.js"));
 
     {
         const lib = addWasmLib(b, .{
@@ -52,7 +46,13 @@ fn addWasmLib(b: *std.Build, options: WasmLibOptions) *std.Build.Step.Compile {
         }),
         .optimize = .ReleaseSmall,
     });
+    mod.global_base = 6560;
     mod.rdynamic = true;
+    mod.import_memory = true;
+    mod.stack_size = std.wasm.page_size;
+
+    mod.initial_memory = std.wasm.page_size * number_of_pages;
+    mod.max_memory = std.wasm.page_size * number_of_pages;
     mod.entry = .disabled;
 
     return mod;
