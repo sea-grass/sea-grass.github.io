@@ -1,3 +1,31 @@
+const debug = {
+  afterLoad(wasm_instantiate_result) {
+    console.table(wasm_instantiate_result.instance.exports);
+  },
+};
+
+class DoubleBuffer {
+  constructor(canvas, mem, mem_offset, width, height) {
+    this.ctx = canvas.getContext("2d");
+    this.image_data = this.ctx.createImageData(width, height);
+    this.mem = mem;
+    this.mem_offset = mem_offset;
+    this.mem_len = width * height * 4;
+    this.width = width;
+    this.height = height;
+  }
+
+  draw() {
+    this.ctx.clearRect(0, 0, this.width, this.height);
+    this.ctx.putImageData(this.image_data, 0, 0);
+  }
+
+  swap() {
+    this.image_data.data.set(
+      this.mem.slice(this.mem_offset, this.mem_offset + this.mem_len)
+    );
+  }
+}
 (async function(){
   const memory = new WebAssembly.Memory({
     initial: 2,
@@ -5,6 +33,7 @@
   });
 
   const callback_ptrs = new Set;
+  const mouseover_callback_ptrs = new Set;
 
   const import_object = {
     env: {
@@ -15,91 +44,57 @@
         console.log("registerClickCallback", callback_ptr);
         callback_ptrs.add(callback_ptr);
       },
+      registerMouseoverCallback(callback_ptr) {
+        console.log("registerMouseoverback", callback_ptr);
+        mouseover_callback_ptrs.add(callback_ptr);
+      },
       memory,
     },
   };
 
   const obj = await WebAssembly.instantiateStreaming(fetch("app.wasm"), import_object);
+  debug.afterLoad(obj);
   const wasm_memory_array = new Uint8Array(memory.buffer);
-
-  const memory_ui = document.querySelector("pre#memory");
 
   const checkerboard_size = obj.instance.exports.getCheckerboardSize();
   const canvas = document.querySelector("canvas");
   canvas.width = checkerboard_size;
   canvas.height = checkerboard_size;
 
-  canvas.addEventListener("click", (e) => {
-    console.log(e);
-    console.log(callback_ptrs);
+  canvas.addEventListener("mouseover", (e) => {
     const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-    for (const callback_ptr of callback_ptrs) {
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    for (const callback_ptr of mouseover_callback_ptrs) {
       console.log(callback_ptr);
+      obj.instance.exports.onMouseoverCallback(callback_ptr, x, y);
+    }
+  });
+  canvas.addEventListener("click", (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    for (const callback_ptr of callback_ptrs) {
       obj.instance.exports.onClickCallback(callback_ptr, x, y);
     }
   });
 
-  const ctx = canvas.getContext("2d");
-  const image_data = ctx.createImageData(canvas.width, canvas.height);
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  const getDarkValue = () => {
-    return Math.floor(Math.random() * 100);
-  };
-  const getLightValue = () => {
-    return Math.floor(Math.random() * 127) + 127;
-  };
-
-  const drawCheckerboard = () => {
-    obj.instance.exports.colourCheckerboard(
-      getDarkValue(),
-      getDarkValue(),
-      getDarkValue(),
-      getLightValue(),
-      getLightValue(),
-      getLightValue(),
-    );
-
-    const buffer_offset = obj.instance.exports.getCheckerboardBufferPointer();
-    const image_data_array = wasm_memory_array.slice(
-      buffer_offset,
-      buffer_offset + checkerboard_size * checkerboard_size * 4,
-    );
-
-    image_data.data.set(image_data_array);
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.putImageData(image_data, 0, 0);
-  };
-
-  const drawMemory = () => {
-    const buffer_offset = obj.instance.exports.getCheckerboardBufferPointer();
-    const image_data_array = wasm_memory_array.slice(
-      buffer_offset,
-      buffer_offset + checkerboard_size * checkerboard_size * 4,
-    );
-    memory_ui.innerText = image_data_array.join("\n");
-  };
+  const double_buf = new DoubleBuffer(
+    canvas, wasm_memory_array, obj.instance.exports.getCheckerboardBufferPointer(), canvas.width, canvas.height,
+  );
 
   obj.instance.exports.init();
-  drawCheckerboard();
-  console.log(memory.buffer);
-    const buffer_offset = obj.instance.exports.getCheckerboardBufferPointer();
-    const image_data_array = wasm_memory_array.slice(
-      buffer_offset,
-      buffer_offset + checkerboard_size * checkerboard_size * 4,
-    );
-  console.log(image_data_array);
-  
-  const loop = () => {
-    const foo = 0;
-    obj.instance.exports.useFoo(foo);
-    drawCheckerboard();
-    drawMemory();
-    const promise = new Promise((res) => setTimeout(res, 1000/1));
+  loop();
+
+  function loop() {
+    obj.instance.exports.update();
+
+    obj.instance.exports.draw();
+    // handle drawing
+    double_buf.swap();
+    double_buf.draw();
+
+    const promise = new Promise((res) => setTimeout(res, 1000/60));
     requestAnimationFrame(() => promise.then(loop));
   };
-  loop();
 })();

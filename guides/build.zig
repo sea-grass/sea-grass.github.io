@@ -28,6 +28,17 @@ pub fn build(b: *std.Build) void {
     });
     install_directory.step.dependOn(&write_files.step);
     js_guide.dependOn(&install_directory.step);
+
+    const serve = b.step("serve", "Build and serve the JS guide.");
+
+    const cmd = b.addSystemCommand(&.{
+        "sh",
+        "-c",
+        b.fmt("cd 'zig-out/js-guide'; python3 -m http.server", .{}),
+    });
+    cmd.step.dependOn(&install_directory.step);
+
+    serve.dependOn(&cmd.step);
 }
 
 const WasmLibOptions = struct {
