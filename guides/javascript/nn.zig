@@ -2,7 +2,6 @@
 const std = @import("std");
 
 test {
-    const allocator = std.testing.allocator;
     const input_len = 2;
     const output_len = 4;
     var nn = NeuralNetwork(.{
@@ -10,7 +9,7 @@ test {
         .output_len = output_len,
         .learning_rate = 0.1,
     }){};
-    nn.init(allocator);
+    nn.init();
     defer nn.deinit();
 
     var prng = std.rand.DefaultPrng.init(0);
@@ -90,19 +89,13 @@ test {
             std.testing.expectEqualSlices(f32, &training_set.outputs, &outputs) catch {
                 std.debug.print("Failed case -- \n", .{});
                 std.debug.print("\n\n in: ", .{});
-                for (training_set.inputs) |o| {
-                    std.debug.print("{d} ", .{o});
-                }
+                std.debug.print("{any} ", .{training_set.inputs});
                 std.debug.print("\n", .{});
                 std.debug.print("out: ", .{});
-                for (outputs) |o| {
-                    std.debug.print("{d} ", .{o});
-                }
+                std.debug.print("{any} ", .{outputs});
                 std.debug.print("\n", .{});
                 std.debug.print("exp: ", .{});
-                for (training_set.outputs) |o| {
-                    std.debug.print("{d} ", .{o});
-                }
+                std.debug.print("{any} ", .{training_set.outputs});
                 std.debug.print("\n\n", .{});
             };
         }
@@ -119,14 +112,12 @@ fn NeuralNetwork(comptime options: InitOptions) type {
     return struct {
         weights: [options.output_len][options.input_len]f32 = undefined,
         bias: [options.output_len]f32 = undefined,
-        allocator: std.mem.Allocator = undefined,
 
         const Self = @This();
-        pub fn init(nn: *Self, allocator: std.mem.Allocator) void {
+        pub fn init(nn: *Self) void {
             nn.* = .{
                 .weights = std.mem.zeroes([options.output_len][options.input_len]f32),
                 .bias = std.mem.zeroes([options.output_len]f32),
-                .allocator = allocator,
             };
         }
 
