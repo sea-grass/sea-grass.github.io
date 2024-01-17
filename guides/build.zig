@@ -14,7 +14,7 @@ pub fn build(b: *std.Build) void {
     {
         const lib = addWasmLib(b, .{
             .name = "app",
-            .root_source_file = .{ .path = "javascript/guide.zig" },
+            .root_source_file = .{ .path = "javascript/entrypoint.zig" },
         });
         _ = write_files.addCopyFile(lib.getEmittedBin(), "app.wasm");
     }
@@ -57,13 +57,13 @@ fn addWasmLib(b: *std.Build, options: WasmLibOptions) *std.Build.Step.Compile {
         }),
         .optimize = .ReleaseSmall,
     });
-    mod.global_base = 6560;
+    mod.global_base = null;
     mod.rdynamic = true;
     mod.import_memory = true;
     mod.stack_size = std.wasm.page_size;
 
     mod.initial_memory = std.wasm.page_size * number_of_pages;
-    mod.max_memory = std.wasm.page_size * number_of_pages;
+    //mod.max_memory = std.wasm.page_size * number_of_pages;
     mod.entry = .disabled;
 
     return mod;

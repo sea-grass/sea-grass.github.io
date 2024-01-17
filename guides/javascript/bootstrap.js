@@ -1,6 +1,7 @@
 const debug = {
   afterLoad(wasm_instantiate_result) {
     console.table(wasm_instantiate_result.instance.exports);
+    window.wasm_instantiate_result= wasm_instantiate_result;
   },
 };
 
@@ -21,15 +22,16 @@ class DoubleBuffer {
   }
 
   swap() {
-    this.image_data.data.set(
-      this.mem.slice(this.mem_offset, this.mem_offset + this.mem_len)
-    );
+    const mem = this.mem.slice(this.mem_offset, this.mem_offset + this.mem_len);
+    console.log(mem);
+    this.image_data.data.set(mem);
   }
 }
+
 (async function(){
   const memory = new WebAssembly.Memory({
     initial: 2,
-    maximum: 2,
+    maximum: 15,
   });
 
   const callback_ptrs = new Set;
@@ -37,6 +39,7 @@ class DoubleBuffer {
 
   const import_object = {
     env: {
+      memory,
       print(num) {
         console.log("env.print", num);
       },
@@ -48,53 +51,68 @@ class DoubleBuffer {
         console.log("registerMouseoverback", callback_ptr);
         mouseover_callback_ptrs.add(callback_ptr);
       },
-      memory,
     },
   };
 
   const obj = await WebAssembly.instantiateStreaming(fetch("app.wasm"), import_object);
   debug.afterLoad(obj);
-  const wasm_memory_array = new Uint8Array(memory.buffer);
 
-  const checkerboard_size = obj.instance.exports.getCheckerboardSize();
-  const canvas = document.querySelector("canvas");
-  canvas.width = checkerboard_size;
-  canvas.height = checkerboard_size;
+  const canvas = document.querySelector('canvas');
+  canvas.width = obj.instance.exports.getWidth();
+  canvas.height= obj.instance.exports.getHeight();
 
-  canvas.addEventListener("mouseover", (e) => {
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    for (const callback_ptr of mouseover_callback_ptrs) {
-      console.log(callback_ptr);
-      obj.instance.exports.onMouseoverCallback(callback_ptr, x, y);
-    }
-  });
-  canvas.addEventListener("click", (e) => {
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    for (const callback_ptr of callback_ptrs) {
-      obj.instance.exports.onClickCallback(callback_ptr, x, y);
-    }
-  });
-
-  const double_buf = new DoubleBuffer(
-    canvas, wasm_memory_array, obj.instance.exports.getCheckerboardBufferPointer(), canvas.width, canvas.height,
-  );
-
-  obj.instance.exports.init();
-  loop();
-
-  function loop() {
-    obj.instance.exports.update();
-
-    obj.instance.exports.draw();
-    // handle drawing
-    double_buf.swap();
-    double_buf.draw();
-
-    const promise = new Promise((res) => setTimeout(res, 1000/60));
-    requestAnimationFrame(() => promise.then(loop));
+  const ledger = {
+    double_buf: undefined,
+    wasm_memory_array: undefined,
   };
+
+  function displayFatalError(err) {
+    document.querySelector("#error").innerText = err.message + "\n" + err.stack;
+  }
+
+  const app = {
+    init() {
+      obj.instance.exports.init();
+      console.log(obj.instance.exports.getCanvasPtr());
+      ledger.wasm_memory_array = new Uint8Array(memory.buffer);
+      ledger.double_buf = new DoubleBuffer(
+        canvas,
+        ledger.wasm_memory_array,
+        obj.instance.exports.getCanvasPtr(),
+        canvas.width,
+        canvas.height,
+      );
+    },
+    quit() { obj.instance.exports.quit(); },
+    shouldLoop() { return true; },
+    update() { obj.instance.exports.update(); },
+    draw() {
+      obj.instance.exports.draw();
+      ledger.double_buf.swap();
+      ledger.double_buf.draw();
+    },
+    start() {
+      try {
+      app.init();
+      } catch (err) {
+        displayFatalError(err);
+        return;
+      }
+      app.loop();
+    },
+    loop() {
+      app.update();
+      app.draw();
+
+      if (app.shouldLoop()) {
+        const promise = new Promise((res) => setTimeout(res, 1000/30));
+        requestAnimationFrame(() => promise.then(app.loop));
+      } else {
+        app.quit();
+      }
+    }
+  };
+
+  app.start();
+
 })();
