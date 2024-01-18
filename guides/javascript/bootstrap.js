@@ -42,6 +42,8 @@ class DoubleBuffer {
   canvas.width = obj.instance.exports.getWidth();
   canvas.height= obj.instance.exports.getHeight();
 
+  const chrome = document.querySelector('#chrome');
+
   const ledger = {
     double_buf: undefined,
     wasm_memory_array: undefined,
@@ -87,6 +89,9 @@ class DoubleBuffer {
       obj.instance.exports.draw();
       ledger.double_buf.swap();
       ledger.double_buf.draw();
+      const total = obj.instance.exports.getTotal();
+      const completion = ((total-obj.instance.exports.getRemaining())/total*100).toFixed(2);
+      chrome.innerText = `${completion}% complete`;
     },
     start() {
       try {
