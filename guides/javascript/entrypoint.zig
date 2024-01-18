@@ -5,9 +5,8 @@ const allocator = std.heap.wasm_allocator;
 const height = 256;
 const width = 256;
 
-var app: App = undefined;
+var app: *App = undefined;
 
-var err_buf = std.mem.zeroes([4]u8);
 var canvas_buf_ptr: []u8 = undefined;
 
 export fn getCanvasPtr() [*]u8 {
@@ -24,11 +23,13 @@ export fn getHeight() u32 {
 
 export fn init() void {
     canvas_buf_ptr = allocator.alloc(u8, height * width * 4) catch @panic("Failed to allocate memory to store the canvas pixels.");
-    app.init();
+    app = allocator.create(App) catch @panic("Failed to allocate memory for the App");
+    app.init(width, height);
 }
 
 export fn quit() void {
     app.quit();
+    allocator.destroy(app);
     allocator.free(canvas_buf_ptr);
 }
 
@@ -38,4 +39,8 @@ export fn update() void {
 
 export fn draw() void {
     app.draw(&canvas_buf_ptr);
+}
+
+export fn mousemove(x: u32, y: u32) void {
+    app.event(.{ .mousemove = .{ .x = x, .y = y } });
 }

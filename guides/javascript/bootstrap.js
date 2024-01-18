@@ -23,7 +23,6 @@ class DoubleBuffer {
 
   swap() {
     const mem = this.mem.slice(this.mem_offset, this.mem_offset + this.mem_len);
-    console.log(mem);
     this.image_data.data.set(mem);
   }
 }
@@ -82,6 +81,22 @@ class DoubleBuffer {
         canvas.width,
         canvas.height,
       );
+      canvas.addEventListener("mousemove", (e) => {
+        const rect = canvas.getBoundingClientRect();
+
+        const actual_width = rect.width;
+        const width_scale = actual_width / canvas.width;
+        const x = e.clientX - rect.left;
+        const pixel_x = Math.floor(x / width_scale);
+
+        const actual_height = rect.height;
+        const height_scale = actual_height / canvas.height;
+        const y = e.clientY - rect.top;
+        const pixel_y = Math.floor(y / height_scale);
+
+        obj.instance.exports.mousemove(pixel_x, pixel_y);
+
+      });
     },
     quit() { obj.instance.exports.quit(); },
     shouldLoop() { return true; },
@@ -93,7 +108,7 @@ class DoubleBuffer {
     },
     start() {
       try {
-      app.init();
+        app.init();
       } catch (err) {
         displayFatalError(err);
         return;
@@ -105,7 +120,7 @@ class DoubleBuffer {
       app.draw();
 
       if (app.shouldLoop()) {
-        const promise = new Promise((res) => setTimeout(res, 1000/30));
+        const promise = new Promise((res) => setTimeout(res, 1000/60));
         requestAnimationFrame(() => promise.then(app.loop));
       } else {
         app.quit();
