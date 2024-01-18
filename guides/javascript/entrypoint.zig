@@ -2,8 +2,8 @@ const std = @import("std");
 const App = @import("app.zig");
 const allocator = std.heap.wasm_allocator;
 
-const height = 256;
-const width = 256;
+const height = 48;
+const width = 48;
 
 var app: *App = undefined;
 
@@ -24,7 +24,7 @@ export fn getHeight() u32 {
 export fn init() void {
     canvas_buf_ptr = allocator.alloc(u8, height * width * 4) catch @panic("Failed to allocate memory to store the canvas pixels.");
     app = allocator.create(App) catch @panic("Failed to allocate memory for the App");
-    app.init(width, height);
+    app.init(allocator, width, height);
 }
 
 export fn quit() void {

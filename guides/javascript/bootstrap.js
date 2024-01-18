@@ -33,25 +33,7 @@ class DoubleBuffer {
     maximum: 15,
   });
 
-  const callback_ptrs = new Set;
-  const mouseover_callback_ptrs = new Set;
-
-  const import_object = {
-    env: {
-      memory,
-      print(num) {
-        console.log("env.print", num);
-      },
-      registerClickCallback(callback_ptr) {
-        console.log("registerClickCallback", callback_ptr);
-        callback_ptrs.add(callback_ptr);
-      },
-      registerMouseoverCallback(callback_ptr) {
-        console.log("registerMouseoverback", callback_ptr);
-        mouseover_callback_ptrs.add(callback_ptr);
-      },
-    },
-  };
+  const import_object = { env: { memory }};
 
   const obj = await WebAssembly.instantiateStreaming(fetch("app.wasm"), import_object);
   debug.afterLoad(obj);
@@ -114,6 +96,7 @@ class DoubleBuffer {
         return;
       }
       app.loop();
+
     },
     loop() {
       app.update();
