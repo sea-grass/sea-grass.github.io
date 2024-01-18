@@ -1,9 +1,5 @@
 const std = @import("std");
 
-// Number of pages reserved for heap memory.
-// This must match the number of pages used in script.js.
-const number_of_pages = 2;
-
 pub fn build(b: *std.Build) void {
     const js_guide = b.step("js-guide", "Build the JS guide.");
 
@@ -42,6 +38,10 @@ pub fn build(b: *std.Build) void {
 }
 
 const WasmLibOptions = struct {
+    // Number of pages reserved for heap memory.
+    // This must match the number of pages used in script.js.
+    number_of_pages: usize = 2,
+
     name: []const u8,
     root_source_file: std.Build.LazyPath,
 };
@@ -62,7 +62,7 @@ fn addWasmLib(b: *std.Build, options: WasmLibOptions) *std.Build.Step.Compile {
     mod.import_memory = true;
     mod.stack_size = std.wasm.page_size;
 
-    mod.initial_memory = std.wasm.page_size * number_of_pages;
+    mod.initial_memory = std.wasm.page_size * options.number_of_pages;
     //mod.max_memory = std.wasm.page_size * number_of_pages;
     mod.entry = .disabled;
 

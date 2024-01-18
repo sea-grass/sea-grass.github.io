@@ -8,7 +8,8 @@ pos: m.Pos,
 state: enum { down, right, up, left, random, avoid_cursor } = .down,
 hp: u32 = 3,
 
-pub fn update(self: *Mob, app: *const App) void {
+pub fn update(self: *Mob, app: *const App, time: u32, dt: u32) void {
+    _ = time;
     if (self.hp == 0) return;
 
     const width = app.width;
@@ -70,7 +71,7 @@ pub fn update(self: *Mob, app: *const App) void {
             }
         },
         .avoid_cursor => {
-            const mouse_r = 2;
+            const mouse_r = 16;
             const mouse_box = m.Box{
                 .p1 = .{
                     .x = @max(0, app.cursor.x - mouse_r),
@@ -84,14 +85,14 @@ pub fn update(self: *Mob, app: *const App) void {
 
             if (mouse_box.contains(self.pos)) {
                 self.hp = @max(0, self.hp - 1);
-                const dx = rand.random().uintLessThan(u32, 3);
+                const dx = rand.random().uintLessThan(u32, 3) * dt / 10;
                 if (rand.random().boolean()) {
                     self.pos.x = @min(width, self.pos.x + dx);
                 } else {
                     self.pos.x = @max(0, self.pos.x - dx);
                 }
 
-                const dy = rand.random().uintLessThan(u32, 3);
+                const dy = rand.random().uintLessThan(u32, 3) * dt / 10;
                 if (rand.random().boolean()) {
                     self.pos.y = @min(height, self.pos.y + dy);
                 } else {

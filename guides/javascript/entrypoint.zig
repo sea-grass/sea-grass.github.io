@@ -1,13 +1,14 @@
 const std = @import("std");
 const App = @import("app.zig");
 const allocator = std.heap.wasm_allocator;
+const JS = @import("js.zig");
 
-const height = 48;
-const width = 48;
+const height = 256;
+const width = 256;
 
 var app: *App = undefined;
-
 var canvas_buf_ptr: []u8 = undefined;
+var time: u32 = undefined;
 
 export fn getCanvasPtr() [*]u8 {
     return @ptrCast(canvas_buf_ptr);
@@ -25,6 +26,7 @@ export fn init() void {
     canvas_buf_ptr = allocator.alloc(u8, height * width * 4) catch @panic("Failed to allocate memory to store the canvas pixels.");
     app = allocator.create(App) catch @panic("Failed to allocate memory for the App");
     app.init(allocator, width, height);
+    time = JS.getTime();
 }
 
 export fn quit() void {
@@ -34,11 +36,17 @@ export fn quit() void {
 }
 
 export fn update() void {
-    app.update();
+    const new_time = JS.getTime();
+    const dt = new_time - time;
+    app.update(new_time, dt);
 }
 
 export fn draw() void {
-    app.draw(&canvas_buf_ptr);
+    // this should happen in one place, but not in either update or draw
+    const new_time = JS.getTime();
+    const dt = new_time - time;
+    time = new_time;
+    app.draw(new_time, dt, &canvas_buf_ptr);
 }
 
 export fn mousemove(x: u32, y: u32) void {

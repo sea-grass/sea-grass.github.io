@@ -17,6 +17,7 @@ pub const App = @This();
 const AppState = enum {
     display_static,
     display_mobs,
+    display2,
 };
 
 var rand = std.rand.DefaultPrng.init(0);
@@ -27,7 +28,7 @@ export fn random() i32 {
 pub fn init(self: *App, allocator: std.mem.Allocator, width: usize, height: usize) void {
     self.* = .{
         .player_health = 3,
-        .state = .display_mobs,
+        .state = .display2,
         .width = width,
         .height = height,
         .cursor = .{ .x = 0, .y = 0 },
@@ -54,10 +55,10 @@ pub fn quit(self: *App) void {
     self.mobs.deinit();
 }
 
-pub fn update(self: *App) void {
+pub fn update(self: *App, time: u32, dt: u32) void {
     for (self.mobs.items) |*mob| {
         if (mob.hp > 0) {
-            mob.update(self);
+            mob.update(self, time, dt);
             if (mob.hp == 0) {
                 self.mobs_left -= 1;
             }
@@ -73,7 +74,8 @@ pub fn event(self: *App, e: Event) void {
     }
 }
 
-pub fn draw(self: *App, canvas: *[]u8) void {
+pub fn draw(self: *App, time: u32, dt: u32, canvas: *[]u8) void {
+    _ = dt;
     switch (self.state) {
         .display_static => {
             clear(canvas);
@@ -129,32 +131,35 @@ pub fn draw(self: *App, canvas: *[]u8) void {
             {
                 clear(canvas);
 
-                const mouse_r = 2;
-                const mouse_box = m.Box{
-                    .p1 = .{
-                        .x = @max(0, self.cursor.x - mouse_r),
-                        .y = @max(0, self.cursor.y - mouse_r),
-                    },
-                    .p2 = .{
-                        .x = @min(self.width - 1, self.cursor.x + mouse_r),
-                        .y = @min(self.height - 1, self.cursor.y + mouse_r),
-                    },
-                };
-                for (mouse_box.p1.x..mouse_box.p2.x) |x| {
-                    for (mouse_box.p1.y..mouse_box.p2.y) |y| {
-                        const pixel_index = x + y * self.width;
-                        const arr_index = pixel_index * 4;
+                self.drawCursor(canvas);
+            }
+            for (self.mobs.items) |mob| {
+                mob.draw(self, canvas);
+            }
+        },
+        .display2 => {
+            clear(canvas);
+            for (0..self.width) |x_index| {
+                const x: u8 = @intCast(x_index);
+                for (0..self.height) |y_index| {
+                    const y: u8 = @intCast(y_index);
 
-                        canvas.*[arr_index + 0] = rand.random().uintAtMost(u8, 60) + 60;
-                        canvas.*[arr_index + 1] = 100;
-                        canvas.*[arr_index + 2] = 255;
-                        canvas.*[arr_index + 3] = 255;
-                    }
+                    const pixel_index = x + y * self.width;
+                    const arr_index = pixel_index * 4;
+
+                    const v: [4]u8 = @bitCast(time + x + y);
+
+                    canvas.*[arr_index + 0] = @mod(v[0], 128);
+                    canvas.*[arr_index + 1] = @mod(v[1], 255);
+                    canvas.*[arr_index + 2] = @mod(v[2], 255);
+                    canvas.*[arr_index + 3] = 255;
                 }
             }
             for (self.mobs.items) |mob| {
                 mob.draw(self, canvas);
             }
+
+            self.drawCursor(canvas);
         },
     }
 }
@@ -162,5 +167,30 @@ pub fn draw(self: *App, canvas: *[]u8) void {
 fn clear(canvas: *[]u8) void {
     for (canvas.*) |*i| {
         i.* = 0;
+    }
+}
+
+fn drawCursor(self: *const App, canvas: *[]u8) void {
+    const mouse_r = 4;
+    const mouse_box = m.Box{
+        .p1 = .{
+            .x = @max(0, self.cursor.x - mouse_r),
+            .y = @max(0, self.cursor.y - mouse_r),
+        },
+        .p2 = .{
+            .x = @min(self.width - 1, self.cursor.x + mouse_r),
+            .y = @min(self.height - 1, self.cursor.y + mouse_r),
+        },
+    };
+    for (mouse_box.p1.x..mouse_box.p2.x) |x| {
+        for (mouse_box.p1.y..mouse_box.p2.y) |y| {
+            const pixel_index = x + y * self.width;
+            const arr_index = pixel_index * 4;
+
+            canvas.*[arr_index + 0] = rand.random().uintAtMost(u8, 60) + 60;
+            canvas.*[arr_index + 1] = 255;
+            canvas.*[arr_index + 2] = 100;
+            canvas.*[arr_index + 3] = 255;
+        }
     }
 }

@@ -1,7 +1,7 @@
 const debug = {
   afterLoad(wasm_instantiate_result) {
     console.table(wasm_instantiate_result.instance.exports);
-    window.wasm_instantiate_result= wasm_instantiate_result;
+    window.wasm_instantiate_result = wasm_instantiate_result;
   },
 };
 
@@ -27,22 +27,32 @@ class DoubleBuffer {
   }
 }
 
-(async function(){
+(async function () {
   const memory = new WebAssembly.Memory({
     initial: 2,
-    maximum: 15,
+    maximum: 100,
   });
 
-  const import_object = { env: { memory }};
+  const import_object = {
+    env: {
+      memory,
+      getTime() {
+        return Date.now();
+      },
+    },
+  };
 
-  const obj = await WebAssembly.instantiateStreaming(fetch("app.wasm"), import_object);
+  const obj = await WebAssembly.instantiateStreaming(
+    fetch("app.wasm"),
+    import_object,
+  );
   debug.afterLoad(obj);
 
-  const canvas = document.querySelector('canvas');
+  const canvas = document.querySelector("canvas");
   canvas.width = obj.instance.exports.getWidth();
-  canvas.height= obj.instance.exports.getHeight();
+  canvas.height = obj.instance.exports.getHeight();
 
-  const chrome = document.querySelector('#chrome');
+  const chrome = document.querySelector("#chrome");
 
   const ledger = {
     double_buf: undefined,
@@ -79,18 +89,26 @@ class DoubleBuffer {
         const pixel_y = Math.floor(y / height_scale);
 
         obj.instance.exports.mousemove(pixel_x, pixel_y);
-
       });
     },
-    quit() { obj.instance.exports.quit(); },
-    shouldLoop() { return true; },
-    update() { obj.instance.exports.update(); },
+    quit() {
+      obj.instance.exports.quit();
+    },
+    shouldLoop() {
+      return true;
+    },
+    update() {
+      obj.instance.exports.update();
+    },
     draw() {
       obj.instance.exports.draw();
       ledger.double_buf.swap();
       ledger.double_buf.draw();
       const total = obj.instance.exports.getTotal();
-      const completion = ((total-obj.instance.exports.getRemaining())/total*100).toFixed(2);
+      const completion = (
+        ((total - obj.instance.exports.getRemaining()) / total) *
+        100
+      ).toFixed(2);
       chrome.innerText = `${completion}% complete`;
     },
     start() {
@@ -101,21 +119,19 @@ class DoubleBuffer {
         return;
       }
       app.loop();
-
     },
     loop() {
       app.update();
       app.draw();
 
       if (app.shouldLoop()) {
-        const promise = new Promise((res) => setTimeout(res, 1000/60));
+        const promise = new Promise((res) => setTimeout(res, 1000 / 60));
         requestAnimationFrame(() => promise.then(app.loop));
       } else {
         app.quit();
       }
-    }
+    },
   };
 
   app.start();
-
 })();
