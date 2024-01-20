@@ -7,6 +7,7 @@ const Draw = @import("Draw.zig");
 player_health: i32,
 state: AppState,
 cursor: m.Pos,
+cursor_r: usize,
 width: usize,
 height: usize,
 allocator: std.mem.Allocator,
@@ -33,6 +34,7 @@ pub fn init(self: *App, allocator: std.mem.Allocator, width: usize, height: usiz
         .width = width,
         .height = height,
         .cursor = .{ .x = 0, .y = 0 },
+        .cursor_r = 2,
         .allocator = allocator,
         .mobs = std.ArrayList(Mob).init(allocator),
         .total_mobs = self.width * self.height,
@@ -71,6 +73,16 @@ pub fn event(self: *App, e: Event) void {
     switch (e) {
         .mousemove => |mm| {
             self.cursor = mm;
+        },
+        .wheel => |wheel| {
+            const min = 2;
+            const max = self.width / 4;
+            const dy = 2;
+            if (wheel.dy < 0) {
+                self.cursor_r = @max(min, self.cursor_r - dy);
+            } else if (wheel.dy > 0) {
+                self.cursor_r = @min(max, self.cursor_r + dy);
+            }
         },
     }
 }
@@ -177,7 +189,7 @@ fn clear(canvas: *[]u8) void {
 }
 
 fn drawCursor(self: *const App, canvas: *[]u8) void {
-    const mouse_r = 4;
+    const mouse_r = self.cursor_r;
     var it = Draw.RectIterator{
         .from = .{
             .x = @max(0, self.cursor.x - mouse_r),

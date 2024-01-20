@@ -90,6 +90,12 @@ class DoubleBuffer {
 
         obj.instance.exports.mousemove(pixel_x, pixel_y);
       });
+      canvas.addEventListener("wheel", (e) => {
+        const dx = e.deltaX;
+        const dy = e.deltaY;
+        // TODO Add `e.buttons` to the event as modifiers
+        obj.instance.exports.wheel(dx, dy);
+      });
     },
     quit() {
       obj.instance.exports.quit();

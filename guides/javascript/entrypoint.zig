@@ -53,6 +53,10 @@ export fn mousemove(x: u32, y: u32) void {
     app.event(.{ .mousemove = .{ .x = x, .y = y } });
 }
 
+export fn wheel(dx: i32, dy: i32) void {
+    app.event(.{ .wheel = .{ .dx = dx, .dy = dy } });
+}
+
 export fn getRemaining() u32 {
     return app.mobs_left;
 }

@@ -71,7 +71,7 @@ pub fn update(self: *Mob, app: *const App, time: u32, dt: u32) void {
             }
         },
         .avoid_cursor => {
-            const mouse_r = 16;
+            const mouse_r = app.cursor_r;
             const mouse_box = m.Box{
                 .p1 = .{
                     .x = @max(0, app.cursor.x - mouse_r),
