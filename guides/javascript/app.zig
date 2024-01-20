@@ -2,6 +2,7 @@ const std = @import("std");
 const Event = @import("event.zig").Event;
 const m = @import("m.zig");
 const Mob = @import("Mob.zig");
+const Draw = @import("Draw.zig");
 
 player_health: i32,
 state: AppState,
@@ -158,6 +159,11 @@ pub fn draw(self: *App, time: u32, dt: u32, canvas: *[]u8) void {
             for (self.mobs.items) |mob| {
                 mob.draw(self, canvas);
             }
+
+            Draw.rect(canvas, self.width, .{
+                .from = .{ .x = 1, .y = 1 },
+                .to = .{ .x = 50, .y = 50 },
+            });
 
             self.drawCursor(canvas);
         },
