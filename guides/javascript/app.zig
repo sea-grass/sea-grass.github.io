@@ -178,25 +178,22 @@ fn clear(canvas: *[]u8) void {
 
 fn drawCursor(self: *const App, canvas: *[]u8) void {
     const mouse_r = 4;
-    const mouse_box = m.Box{
-        .p1 = .{
+    var it = Draw.RectIterator{
+        .from = .{
             .x = @max(0, self.cursor.x - mouse_r),
             .y = @max(0, self.cursor.y - mouse_r),
         },
-        .p2 = .{
+        .to = .{
             .x = @min(self.width - 1, self.cursor.x + mouse_r),
             .y = @min(self.height - 1, self.cursor.y + mouse_r),
         },
+        .width = self.width,
     };
-    for (mouse_box.p1.x..mouse_box.p2.x) |x| {
-        for (mouse_box.p1.y..mouse_box.p2.y) |y| {
-            const pixel_index = x + y * self.width;
-            const arr_index = pixel_index * 4;
 
-            canvas.*[arr_index + 0] = rand.random().uintAtMost(u8, 60) + 60;
-            canvas.*[arr_index + 1] = 255;
-            canvas.*[arr_index + 2] = 100;
-            canvas.*[arr_index + 3] = 255;
-        }
+    while (it.next()) |arr_index| {
+        canvas.*[arr_index + 0] = rand.random().uintAtMost(u8, 60) + 60;
+        canvas.*[arr_index + 1] = 255;
+        canvas.*[arr_index + 2] = 100;
+        canvas.*[arr_index + 3] = 255;
     }
 }
