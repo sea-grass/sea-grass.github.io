@@ -7,66 +7,17 @@ const RectOptions = struct {
 };
 
 pub fn rect(canvas: *[]u8, width: usize, options: RectOptions) void {
-    const min_x = @min(options.from.x, options.to.x);
-    const max_x = @max(options.from.x, options.to.x);
-    const min_y = @min(options.from.y, options.to.y);
-    const max_y = @max(options.from.y, options.to.y);
+    var it = RectIterator{
+        .from = options.from,
+        .to = options.to,
+        .width = width,
+    };
 
-    // top line
-    {
-        var it = RectIterator{
-            .from = options.from,
-            .to = options.to,
-            .width = width,
-        };
-
-        while (it.next()) |arr_index| {
-            canvas.*[arr_index + 0] = 200;
-            canvas.*[arr_index + 1] = 200;
-            canvas.*[arr_index + 2] = 200;
-            canvas.*[arr_index + 3] = 255;
-        }
-    }
-
-    if (false) {
-        // right line
-        {
-            const x = options.to.x;
-            for (min_y..max_y) |y| {
-                const pixel_index = x + y * width;
-                const arr_index = pixel_index * 4;
-                canvas.*[arr_index + 0] = 200;
-                canvas.*[arr_index + 1] = 200;
-                canvas.*[arr_index + 2] = 200;
-                canvas.*[arr_index + 3] = 255;
-            }
-        }
-
-        // bottom line
-        {
-            const y = options.to.y;
-            for (min_x..max_x) |x| {
-                const pixel_index = x + y * width;
-                const arr_index = pixel_index * 4;
-                canvas.*[arr_index + 0] = 200;
-                canvas.*[arr_index + 1] = 200;
-                canvas.*[arr_index + 2] = 200;
-                canvas.*[arr_index + 3] = 255;
-            }
-        }
-
-        // left line
-        {
-            const x = options.from.x;
-            for (min_y..max_y) |y| {
-                const pixel_index = x + y * width;
-                const arr_index = pixel_index * 4;
-                canvas.*[arr_index + 0] = 200;
-                canvas.*[arr_index + 1] = 200;
-                canvas.*[arr_index + 2] = 200;
-                canvas.*[arr_index + 3] = 255;
-            }
-        }
+    while (it.next()) |arr_index| {
+        canvas.*[arr_index + 0] = 200;
+        canvas.*[arr_index + 1] = 200;
+        canvas.*[arr_index + 2] = 200;
+        canvas.*[arr_index + 3] = 255;
     }
 }
 
