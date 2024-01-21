@@ -114,6 +114,14 @@ pub fn build(b: *std.Build) !void {
 
         const wws_dir = b.addWriteFiles();
         _ = wws_dir.addCopyFile(server.getEmittedBin(), "hello.wasm");
+        _ = wws_dir.add("worker-kv.toml",
+            \\ name = "workerkv"
+            \\ version = "1"
+            \\
+            \\ [data]
+            \\ [data.kv]
+            \\ namespace = "workerkv"
+        );
 
         const run_wws_cmd = b.addSystemCommand(&.{"echo"});
         _ = run_wws_cmd.argv.orderedRemove(0);
